@@ -59,7 +59,7 @@ void LoadSettings(SystemSettings& settings)
 	} 
 	
 	if (!loadSuccess) {
-        wcscpy(settings.userMessage,_T("In-Game"));
+        _tcscpy(settings.userMessage,_T("In-Game"));
         settings.interval = 25;
         settings.asGame = false;
 		settings.legacyTimer = false;

@@ -36,6 +36,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include <windows.h>
+#include <stdio.h>
 #include <tchar.h>
 #include <Psapi.h>
 
@@ -103,7 +104,7 @@ static BOOL CALLBACK EnumWindowsProc( HWND hwnd, LPARAM lParam )
     GetWindowText(hwnd, szWindowName, 255);
 
     if(processID == (DWORD)lParam && 
-       wcscmp(szWindowName, _T("")) != 0 &&
+       _tcscmp(szWindowName, _T("")) != 0 &&
        IsWindowVisible(hwnd))
     {
         GetWindowText(hwnd, szWindowName, 255);
@@ -307,7 +308,7 @@ LRESULT WINAPI IMinGameProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
                 {
                     TCHAR text[63];
                     GetWindowText((HWND)lParam, text, 63);
-                    wcscpy(gSystemSettings.userMessage, text);
+                    _tcscpy(gSystemSettings.userMessage, text);
                     SaveSettings(gSystemSettings);
                 }
             }
@@ -319,7 +320,7 @@ LRESULT WINAPI IMinGameProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
                 {
                     TCHAR text[10];
                     GetWindowText((HWND)lParam, text, 10);
-                    gSystemSettings.interval = _wtoi(text);
+                    gSystemSettings.interval = _ttoi(text);
                     SaveSettings(gSystemSettings);
 					if (gSystemSettings.legacyTimer) {
 						SetTimer( gHwnd, 0, gSystemSettings.interval * 1000, (TIMERPROC)NULL );
@@ -383,8 +384,8 @@ INT WINAPI WinMain( HINSTANCE hInst, HINSTANCE, LPSTR, int )
     tnd.uID = 0;
     tnd.uFlags = NIF_INFO;
     tnd.dwInfoFlags = NIIF_INFO;
-    wcscpy(tnd.szInfoTitle, _T("IMinGame"));
-    wcscpy(tnd.szInfo, _T("The application stay active in the system tray.\nYou can now start a game of your choice and it will appear in MSN Messenger."));
+    _tcscpy(tnd.szInfoTitle, _T("IMinGame"));
+    _tcscpy(tnd.szInfo, _T("The application stay active in the system tray.\nYou can now start a game of your choice and it will appear in MSN Messenger."));
     Shell_NotifyIcon(NIM_MODIFY,&tnd);
 
     

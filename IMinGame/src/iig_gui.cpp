@@ -111,7 +111,7 @@ void BuildGUI(HINSTANCE hInst, const SystemSettings& settings)
     tnd.uFlags = NIF_MESSAGE|NIF_ICON|NIF_TIP;
     tnd.uCallbackMessage = WM_TRAYMESSAGE;
     tnd.hIcon = LoadIcon(hInst,MAKEINTRESOURCE(IDI_ICON1));
-    wcscpy(tnd.szTip,_T("IMinGame"));
+    _tcscpy(tnd.szTip,_T("IMinGame"));
     Shell_NotifyIcon(NIM_ADD,&tnd);
 
     // Settings

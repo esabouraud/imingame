@@ -1,13 +1,15 @@
 Maintenance : 
 
-* use text file to store settings
-* change tray icon
-* write README
+* better handling of text file to store settings
 
-
-New features :
+New features ideas :
 
 * add an option to display in-game time
 * add option to provide steam profile "join game" link
 * redo GUI with a modern framework ?
-* configurable process blacklist ? 
+* configurable process blacklist in settings file
+* multiple language support
+* NSIS installer
+* launch on windows startup option
+* hide tray icon option
+* right click menu on tray icon

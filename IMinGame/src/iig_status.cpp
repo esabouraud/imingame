@@ -31,6 +31,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include <windows.h>
+#include <stdio.h>
 #include "iig_status.h"
 
 #define MSNMusicString _T("\\0Music\\0%d\\0%s\\0%s\\0%s\\0")
@@ -49,7 +50,7 @@ void setMsnNowPlaying(const TCHAR* userMessage, const TCHAR* gameName, bool asGa
 	} else {
         _sntprintf(buffer, sizeof(buffer)/sizeof(TCHAR), MSNMusicString, 1, MSNFormat, userMessage, gameName);
 	}
-    msndata.cbData = (lstrlenW(buffer)*2)+2;
+    msndata.cbData = (lstrlen(buffer)*2)+2;
     while (msnui = FindWindowEx(NULL, msnui, _T("MsnMsgrUIManager"), NULL))
     {
         SendMessage(msnui, WM_COPYDATA, (WPARAM)hSender, (LPARAM)&msndata);
