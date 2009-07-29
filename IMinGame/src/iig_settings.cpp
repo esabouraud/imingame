@@ -30,35 +30,36 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <iostream>
-#include <fstream>
+#include <stdio.h>
 #include "iig_settings.h"
-
-using namespace std;
 
 void SaveSettings(const SystemSettings& settings)
 {
-    ofstream outputStream;
-    outputStream.open(_T("settings.dat"), ios::out | ios::binary);
-    if(outputStream.is_open())
-    {
-        outputStream.write((char*)&settings, sizeof(settings));
-        outputStream.close();
+	FILE *file = NULL;
+	if ((file = _tfopen(_T("settings.dat"), _T("w"))) != NULL) {
+		_ftprintf(file, _T("userMessage=%s\ninterval=%u\nasGame=%d\nlegacyTimer=%d\n"),
+			settings.userMessage, settings.interval, settings.asGame, settings.legacyTimer);
+		fclose(file);
     }
 }
 
 void LoadSettings(SystemSettings& settings)
 {
-    ifstream inputStream;
-    inputStream.open(_T("settings.dat"), ios::in | ios::binary);
-    if(inputStream.is_open())
-    {
-        inputStream.read((char*)&settings, sizeof(settings));
-        inputStream.close();
-    }
-    else
-    {
-        wcscpy(settings.userMessage,_T("Now Playing"));
+	FILE *file = NULL;
+	bool loadSuccess = false;
+	if ((file = _tfopen(_T("settings.dat"), _T("r"))) != NULL) {
+		//* \todo This part could easily overflow, and should be improved
+		loadSuccess = _ftscanf(file, _T("userMessage=%[^\n]s"),
+			&settings.userMessage) == 1;
+		if (loadSuccess) {
+			loadSuccess = _ftscanf(file, _T("\ninterval=%u\nasGame=%d\nlegacyTimer=%d\n"),
+				&settings.interval, &settings.asGame, &settings.legacyTimer) == 3;
+		}
+		fclose(file);
+	} 
+	
+	if (!loadSuccess) {
+        wcscpy(settings.userMessage,_T("In-Game"));
         settings.interval = 25;
         settings.asGame = false;
 		settings.legacyTimer = false;

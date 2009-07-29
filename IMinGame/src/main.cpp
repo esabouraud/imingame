@@ -413,7 +413,7 @@ INT WINAPI WinMain( HINSTANCE hInst, HINSTANCE, LPSTR, int )
 
 
 	// Catch game running before program launch
-	//PoolProcesses();	
+	PoolProcesses();	
 
     // Message Loop
     MSG msg={0};
