@@ -1,0 +1,13 @@
+Maintenance : 
+
+* use text file to store settings
+* change tray icon
+* write README
+
+
+New features :
+
+* add an option to display in-game time
+* add option to provide steam profile "join game" link
+* redo GUI with a modern framework ?
+* configurable process blacklist ? 
