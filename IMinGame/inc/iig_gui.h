@@ -59,5 +59,13 @@ extern void updateWindowText(const TCHAR* gameName);
 
 extern void BuildGUI(HINSTANCE hInst, const SystemSettings& settings);
 
+#define IIG_LANGSTR_MACRO( id, eng, fre ) IIG_LANGSTR_##id,
+typedef enum _IIG_LANGSTR_IDX {
+#include "iig_txt-inl.h"
+}_IIG_LANGSTR_IDX;
+#undef IIG_LANGSTR_MACRO
+
+extern const _TCHAR* getLangString(UINT lang, UINT idx);
+
 #endif
 

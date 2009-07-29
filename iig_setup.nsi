@@ -77,8 +77,8 @@ ShowUninstDetails show
 Section -Main SEC0000
     SetOutPath $INSTDIR
     SetOverwrite on
-    File Debug\IMinGameHook.dll
-    File Debug\IMinGame.exe
+    File Release\IMinGameHook.dll
+    File Release\IMinGame.exe
     File README
     File CHANGELOG
     File LICENSE

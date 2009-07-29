@@ -189,6 +189,14 @@
 			<File
 				RelativePath=".\src\main.cpp"
 				>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="1"
+					/>
+				</FileConfiguration>
 			</File>
 		</Filter>
 		<Filter
@@ -210,6 +218,10 @@
 			</File>
 			<File
 				RelativePath=".\inc\iig_status.h"
+				>
+			</File>
+			<File
+				RelativePath=".\inc\iig_txt-inl.h"
 				>
 			</File>
 		</Filter>

@@ -32,13 +32,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <stdio.h>
 #include "iig_settings.h"
+#include "iig_gui.h"
 
 void SaveSettings(const SystemSettings& settings)
 {
 	FILE *file = NULL;
 	if ((file = _tfopen(_T("settings.dat"), _T("w"))) != NULL) {
-		_ftprintf(file, _T("userMessage=%s\ninterval=%u\nasGame=%d\nlegacyTimer=%d\n"),
-			settings.userMessage, settings.interval, settings.asGame, settings.legacyTimer);
+		_ftprintf(file, _T("userMessage=%s\ninterval=%u\nasGame=%d\nlegacyTimer=%d\nlang=%u\n"),
+			settings.userMessage, settings.interval, settings.asGame, settings.legacyTimer, settings.lang);
 		fclose(file);
     }
 }
@@ -52,16 +53,17 @@ void LoadSettings(SystemSettings& settings)
 		loadSuccess = _ftscanf(file, _T("userMessage=%[^\n]s"),
 			&settings.userMessage) == 1;
 		if (loadSuccess) {
-			loadSuccess = _ftscanf(file, _T("\ninterval=%u\nasGame=%d\nlegacyTimer=%d\n"),
-				&settings.interval, &settings.asGame, &settings.legacyTimer) == 3;
+			loadSuccess = _ftscanf(file, _T("\ninterval=%u\nasGame=%d\nlegacyTimer=%d\nlang=%u\n"),
+				&settings.interval, &settings.asGame, &settings.legacyTimer, &settings.lang) == 4;
 		}
 		fclose(file);
 	} 
 	
 	if (!loadSuccess) {
-        _tcscpy(settings.userMessage,_T("In-Game"));
         settings.interval = 25;
         settings.asGame = false;
 		settings.legacyTimer = false;
+		settings.lang = 0;
+		_tcscpy(settings.userMessage, getLangString(settings.lang, IIG_LANGSTR_USERMSGDEF));
      }
 }

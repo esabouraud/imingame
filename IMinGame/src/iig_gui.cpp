@@ -49,6 +49,39 @@ extern LRESULT WINAPI IMinGameProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM l
 #define APP_NAME    _T("IMinGame")
 #define APP_VERSION _T("0.1.0")
 
+#define IIG_LANGSTR_MACRO( id, eng, fre ) _T(eng),
+static const TCHAR* engLangStr[] = {
+#include "iig_txt-inl.h"
+};
+#undef IIG_LANGSTR_MACRO
+
+#define IIG_LANGSTR_MACRO( id, eng, fre ) _T(fre),
+static const TCHAR* freLangStr[] = {
+#include "iig_txt-inl.h"
+};
+#undef IIG_LANGSTR_MACRO
+
+
+const _TCHAR* getLangString(UINT lang, UINT idx) {
+	const _TCHAR* str = NULL;
+
+	if (idx >= IIG_LANGSTR_ENDLANGSTR) {
+		idx = IIG_LANGSTR_ENDLANGSTR;
+	}
+
+	switch(lang) {
+	case 1: //fre
+		str = freLangStr[idx];
+		break;
+	case 0: // eng
+	default:
+		str = engLangStr[idx];
+		
+	}
+	
+	return str;
+}
+
 void updateWindowText(const TCHAR* gameName) {
 	RECT rect;
     SendMessage(lblGame, WM_SETTEXT, 0, (LPARAM)gameName);
@@ -83,25 +116,25 @@ void BuildGUI(HINSTANCE hInst, const SystemSettings& settings)
     gHwnd = CreateWindow(_T("IMinGame"), APP_NAME _T(" v") APP_VERSION, WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX, CW_USEDEFAULT, CW_USEDEFAULT, rect.right, rect.bottom, NULL, NULL, hInst, NULL );
     AdjustWindowRect( &rect, WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX, false);	
 
-    CreateWindow(_T("STATIC"), _T("Message:"),  WS_CHILD | WS_VISIBLE | SS_SIMPLE, 5, 5, 70, 20, gHwnd, NULL, hInst, NULL);
+    CreateWindow(_T("STATIC"), getLangString(settings.lang, IIG_LANGSTR_USERMSGLBL),  WS_CHILD | WS_VISIBLE | SS_SIMPLE, 5, 5, 70, 20, gHwnd, NULL, hInst, NULL);
     txtUserMessage = CreateWindowEx(WS_EX_CLIENTEDGE, _T("EDIT"), _T(""),  WS_CHILD | WS_VISIBLE | ES_RIGHT, 75, 3, 120, 20, gHwnd, (HMENU)ID_EDIT_TITLE, hInst, NULL);
-    lblGame = CreateWindow(_T("STATIC"), _T(" - Game Title"),  WS_CHILD | WS_VISIBLE | SS_SIMPLE, 195, 5, 500, 20, gHwnd, NULL, hInst, NULL);
+    lblGame = CreateWindow(_T("STATIC"), getLangString(settings.lang, IIG_LANGSTR_GAMENAMEDEF),  WS_CHILD | WS_VISIBLE | SS_SIMPLE, 195, 5, 500, 20, gHwnd, NULL, hInst, NULL);
 
 	if (settings.legacyTimer) {
-		CreateWindow(_T("STATIC"), _T("Refresh Interval:"),  WS_CHILD | WS_VISIBLE | SS_SIMPLE, 5, 28, 125, 20, gHwnd, NULL, hInst, NULL);
+		CreateWindow(_T("STATIC"), getLangString(settings.lang, IIG_LANGSTR_REFRESHTIMERLBL),  WS_CHILD | WS_VISIBLE | SS_SIMPLE, 5, 28, 125, 20, gHwnd, NULL, hInst, NULL);
 		txtInterval = CreateWindowEx(WS_EX_CLIENTEDGE, _T("EDIT"), _T(""),  WS_CHILD | WS_VISIBLE | ES_NUMBER, 120, 26, 23, 20, gHwnd, (HMENU)ID_EDIT_INTERVAL, hInst, NULL);
-		CreateWindow(_T("STATIC"), _T("secs"),  WS_CHILD | WS_VISIBLE | SS_SIMPLE, 150, 28, 30, 20, gHwnd, NULL, hInst, NULL);
+		CreateWindow(_T("STATIC"), _T("s"),  WS_CHILD | WS_VISIBLE | SS_SIMPLE, 150, 28, 30, 20, gHwnd, NULL, hInst, NULL);
 	}
 
 	//CreateWindow(_T("STATIC"), _T("Steam Profile:"),  WS_CHILD | WS_VISIBLE | SS_SIMPLE, 200, 28, 125, 20, gHwnd, NULL, hInst, NULL);
     //txtSteamProfile = CreateWindowEx(WS_EX_CLIENTEDGE, _T("EDIT"), _T(""),  WS_CHILD | WS_VISIBLE | ES_NUMBER, 300, 26, 80, 20, gHwnd, (HMENU)ID_EDIT_STEAM, hInst, NULL);
 
-    optAsMusic = CreateWindow(_T("BUTTON"), _T("Act as music"),  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTORADIOBUTTON, 5, 50, 300, 20, gHwnd, (HMENU)ID_BUTTON_MUSIC, hInst, NULL);
-    optAsGame = CreateWindow(_T("BUTTON"), _T("Act as game (don't show in contact list)"),  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTORADIOBUTTON, 5, 67, 300, 20, gHwnd, (HMENU)ID_BUTTON_GAME, hInst, NULL);
+    optAsMusic = CreateWindow(_T("BUTTON"), getLangString(settings.lang, IIG_LANGSTR_ACTMUSICLBL),  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTORADIOBUTTON, 5, 50, 400, 20, gHwnd, (HMENU)ID_BUTTON_MUSIC, hInst, NULL);
+    optAsGame = CreateWindow(_T("BUTTON"), getLangString(settings.lang, IIG_LANGSTR_ACTGAMELBL),  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTORADIOBUTTON, 5, 67, 400, 20, gHwnd, (HMENU)ID_BUTTON_GAME, hInst, NULL);
 
-    CreateWindow(_T("BUTTON"), _T("Refresh"),  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON, 108, 90, 98, 20, gHwnd, (HMENU)ID_BUTTON_REFRESH, hInst, NULL);
-    CreateWindow(_T("BUTTON"), _T("Minimize to tray"),  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON, 208, 90, 120, 20, gHwnd, (HMENU)ID_BUTTON_MINIMIZE, hInst, NULL);
-    CreateWindow(_T("BUTTON"), _T("Exit"),  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON, 330, 90, 60, 20, gHwnd, (HMENU)ID_BUTTON_EXIT, hInst, NULL);
+    CreateWindow(_T("BUTTON"), getLangString(settings.lang, IIG_LANGSTR_REFRESHLBL),  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON, 108, 90, 98, 20, gHwnd, (HMENU)ID_BUTTON_REFRESH, hInst, NULL);
+    CreateWindow(_T("BUTTON"), getLangString(settings.lang, IIG_LANGSTR_MINITRAYLBL),  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON, 208, 90, 120, 20, gHwnd, (HMENU)ID_BUTTON_MINIMIZE, hInst, NULL);
+    CreateWindow(_T("BUTTON"), getLangString(settings.lang, IIG_LANGSTR_EXITLBL),  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON, 330, 90, 60, 20, gHwnd, (HMENU)ID_BUTTON_EXIT, hInst, NULL);
 
     // Icon
     NOTIFYICONDATA tnd;

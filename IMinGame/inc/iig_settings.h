@@ -42,6 +42,7 @@ typedef struct _SystemSettings
     UINT interval;
     bool asGame;
 	bool legacyTimer;
+	UINT lang;
 } SystemSettings; 
 
 extern void SaveSettings(const SystemSettings& settings);

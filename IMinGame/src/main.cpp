@@ -239,7 +239,7 @@ LRESULT WINAPI IMinGameProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
         EndPaint(hWnd, &ps);
         break;
     case WM_CLOSE:
-        if(MessageBox(gHwnd, _T("This will stop showing games in your MSN status, are you sure?"), _T("Exit"), MB_YESNO | MB_ICONQUESTION) == IDYES)
+        if(MessageBox(gHwnd, getLangString(gSystemSettings.lang, IIG_LANGSTR_EXITMBOX), getLangString(gSystemSettings.lang, IIG_LANGSTR_EXITLBL), MB_YESNO | MB_ICONQUESTION) == IDYES)
             PostQuitMessage(0);
         break;
 
@@ -257,7 +257,11 @@ LRESULT WINAPI IMinGameProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 			if (gSystemSettings.legacyTimer) {
 				PoolProcesses();
 			} else {
-				EnumWindows(EnumWindowsProc, gGameProcessId);
+				if (gGameProcessId) {
+					EnumWindows(EnumWindowsProc, gGameProcessId);
+				} else {
+					KillTimer(gHwnd, 0);
+				}
 			}
             return 0;
         }
@@ -298,7 +302,7 @@ LRESULT WINAPI IMinGameProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
             ShowWindow( gHwnd, SW_HIDE );
             break;
         case ID_BUTTON_EXIT:
-            if(MessageBox(gHwnd, _T("This will stop showing games in your MSN status, are you sure?"), _T("Exit"), MB_YESNO | MB_ICONQUESTION) == IDYES)
+            if(MessageBox(gHwnd, getLangString(gSystemSettings.lang, IIG_LANGSTR_EXITMBOX), getLangString(gSystemSettings.lang, IIG_LANGSTR_EXITLBL), MB_YESNO | MB_ICONQUESTION) == IDYES)
                 PostQuitMessage(0);
             break;
         case ID_EDIT_TITLE:
@@ -385,7 +389,7 @@ INT WINAPI WinMain( HINSTANCE hInst, HINSTANCE, LPSTR, int )
     tnd.uFlags = NIF_INFO;
     tnd.dwInfoFlags = NIIF_INFO;
     _tcscpy(tnd.szInfoTitle, _T("IMinGame"));
-    _tcscpy(tnd.szInfo, _T("The application stay active in the system tray.\nYou can now start a game of your choice and it will appear in MSN Messenger."));
+    _tcscpy(tnd.szInfo, getLangString(gSystemSettings.lang, IIG_LANGSTR_HELPTXT));
     Shell_NotifyIcon(NIM_MODIFY,&tnd);
 
     

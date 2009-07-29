@@ -1,15 +1,14 @@
 Maintenance : 
 
 * better handling of text file to store settings
+* german and spanish language support
 
 New features ideas :
 
 * add an option to display in-game time
-* add option to provide steam profile "join game" link
+* add option to provide steam profile "join game" link ?
 * redo GUI with a modern framework ?
 * configurable process blacklist in settings file
-* multiple language support
-* NSIS installer
-* launch on windows startup option
+* launch on windows startup option in installer
 * hide tray icon option
 * right click menu on tray icon
