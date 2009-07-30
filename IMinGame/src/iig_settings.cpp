@@ -51,8 +51,8 @@ void LoadSettings(SystemSettings& settings)
 	UINT lang = 0;
 
 	if ((file = _tfopen(_T("settings.dat"), _T("r"))) != NULL) {
-		//* \todo This part could easily overflow, and should be improved
-		loadSuccess = _ftscanf(file, _T("[general]\nuserMessage=%[^\n]s"),
+		//* This part could be replaced with GetPrivateProfileString
+		loadSuccess = _ftscanf(file, _T("[general]\nuserMessage=%62[^\n]s"),
 			&settings.userMessage) == 1;
 		if (loadSuccess) {
 			loadSuccess = _ftscanf(file, _T("\ninterval=%u\nasGame=%d\nlegacyTimer=%d\nlang=%u\n"),

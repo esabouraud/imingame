@@ -64,12 +64,20 @@ BOOL WINAPI DllMain(
 	hinst = hinstDLL;
 
 	switch (fdwReason) {
-		case DLL_PROCESS_ATTACH:
+	case DLL_PROCESS_ATTACH:
+		PostMessage(cbHwnd, WM_IIG_PROCSTART, NULL, GetCurrentProcessId());
+		break;
+	case DLL_PROCESS_DETACH:
+		PostMessage(cbHwnd, WM_IIG_PROCSTOP, NULL, GetCurrentProcessId());
+		break;
+	case DLL_THREAD_ATTACH:
+		// Limit to one thread creation notification per process
+		static BOOL threadNotify = FALSE;
+		if (!threadNotify) {
 			PostMessage(cbHwnd, WM_IIG_PROCSTART, NULL, GetCurrentProcessId());
-			break;
-		case DLL_PROCESS_DETACH:
-			PostMessage(cbHwnd, WM_IIG_PROCSTOP, NULL, GetCurrentProcessId());
-			break;
+			threadNotify = TRUE;
+		}
+		break;
 	}
 
 	return TRUE;
