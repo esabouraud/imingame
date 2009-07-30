@@ -38,7 +38,7 @@ void SaveSettings(const SystemSettings& settings)
 {
 	FILE *file = NULL;
 	if ((file = _tfopen(_T("settings.dat"), _T("w"))) != NULL) {
-		_ftprintf(file, _T("userMessage=%s\ninterval=%u\nasGame=%d\nlegacyTimer=%d\nlang=%u\n"),
+		_ftprintf(file, _T("[general]\nuserMessage=%s\ninterval=%u\nasGame=%d\nlegacyTimer=%d\nlang=%u\n"),
 			settings.userMessage, settings.interval, settings.asGame, settings.legacyTimer, settings.lang);
 		fclose(file);
     }
@@ -48,9 +48,11 @@ void LoadSettings(SystemSettings& settings)
 {
 	FILE *file = NULL;
 	bool loadSuccess = false;
+	UINT lang = 0;
+
 	if ((file = _tfopen(_T("settings.dat"), _T("r"))) != NULL) {
 		//* \todo This part could easily overflow, and should be improved
-		loadSuccess = _ftscanf(file, _T("userMessage=%[^\n]s"),
+		loadSuccess = _ftscanf(file, _T("[general]\nuserMessage=%[^\n]s"),
 			&settings.userMessage) == 1;
 		if (loadSuccess) {
 			loadSuccess = _ftscanf(file, _T("\ninterval=%u\nasGame=%d\nlegacyTimer=%d\nlang=%u\n"),
@@ -58,12 +60,17 @@ void LoadSettings(SystemSettings& settings)
 		}
 		fclose(file);
 	} 
-	
+
+	if (!loadSuccess && (file = _tfopen(_T("presettings.dat"), _T("r"))) != NULL) {
+		_ftscanf(file, _T("[general]\nlang=%u\n"), &lang);
+		fclose(file);
+	}
+
 	if (!loadSuccess) {
         settings.interval = 25;
         settings.asGame = false;
 		settings.legacyTimer = false;
-		settings.lang = 0;
+		settings.lang = lang;
 		_tcscpy(settings.userMessage, getLangString(settings.lang, IIG_LANGSTR_USERMSGDEF));
      }
 }

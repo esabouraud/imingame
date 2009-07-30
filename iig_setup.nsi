@@ -9,6 +9,9 @@ Name IMinGame
 !define COMPANY "Eric Sabouraud"
 !define URL http://sourceforge.net/projects/imingame/
 
+
+
+
 # MultiUser Symbol Definitions
 !define MULTIUSER_EXECUTIONLEVEL Power
 !define MULTIUSER_INSTALLMODE_DEFAULT_CURRENTUSER
@@ -41,7 +44,7 @@ Var StartMenuGroup
 
 # Installer pages
 !insertmacro MUI_PAGE_WELCOME
-!insertmacro MUI_PAGE_LICENSE LICENSE
+!insertmacro MUI_PAGE_LICENSE $(licenseStr)
 !insertmacro MULTIUSER_PAGE_INSTALLMODE
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_STARTMENU Application $StartMenuGroup
@@ -52,9 +55,25 @@ Var StartMenuGroup
 
 # Installer languages
 !insertmacro MUI_LANGUAGE English
-!insertmacro MUI_LANGUAGE Spanish
 !insertmacro MUI_LANGUAGE French
-!insertmacro MUI_LANGUAGE German
+#!insertmacro MUI_LANGUAGE Spanish
+#!insertmacro MUI_LANGUAGE German
+
+# Installer Language Strings
+LicenseLangString licenseStr ${LANG_ENGLISH} LICENSE-eng.txt
+LicenseLangString licenseStr ${LANG_FRENCH}  LICENSE-fra.txt
+#LicenseLangString licenseStr ${LANG_SPANISH} LICENSE-esp.txt
+#LicenseLangString licenseStr ${LANG_GERMAN} LICENSE-deu.txt
+
+LangString ^UninstallLink ${LANG_ENGLISH} "Uninstall $(^Name)"
+LangString ^UninstallLink ${LANG_FRENCH} "Désinstaller $(^Name)"
+#LangString ^UninstallLink ${LANG_SPANISH} "Desinstale $(^Name)"
+#LangString ^UninstallLink ${LANG_GERMAN} "Deinstallieren  $(^Name)"
+
+LangString PresetLang ${LANG_ENGLISH} "0"
+LangString PresetLang ${LANG_FRENCH} "1"
+#LangString PresetLang ${LANG_SPANISH} "2"
+#LangString PresetLang ${LANG_GERMAN} "3"
 
 # Installer attributes
 OutFile imingame-0.1.0-setup.exe
@@ -79,10 +98,14 @@ Section -Main SEC0000
     SetOverwrite on
     File Release\IMinGameHook.dll
     File Release\IMinGame.exe
-    File README
-    File CHANGELOG
-    File LICENSE
+    File README.txt
+    File CHANGELOG.txt
+    File LICENSE-eng.txt
+	File LICENSE-fra.txt
+	File TODO.txt
     WriteRegStr HKLM "${REGKEY}\Components" Main 1
+	WriteINIStr $INSTDIR\presettings.dat "general" lang $(PresetLang)
+
 SectionEnd
 
 Section -post SEC0001
@@ -93,6 +116,7 @@ Section -post SEC0001
     CreateDirectory "$SMPROGRAMS\$StartMenuGroup"
     SetOutPath $INSTDIR
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\$(^Name).lnk" $INSTDIR\IMinGame.exe
+	CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Readme.lnk" $INSTDIR\README.txt
     SetOutPath $SMPROGRAMS\$StartMenuGroup
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\$(^UninstallLink).lnk" $INSTDIR\uninstall.exe
     !insertmacro MUI_STARTMENU_WRITE_END
@@ -121,9 +145,13 @@ done${UNSECTION_ID}:
 
 # Uninstaller sections
 Section /o -un.Main UNSEC0000
-    Delete /REBOOTOK $INSTDIR\LICENSE
-    Delete /REBOOTOK $INSTDIR\CHANGELOG
-    Delete /REBOOTOK $INSTDIR\README
+	Delete /REBOOTOK $INSTDIR\settings.dat
+	Delete /REBOOTOK $INSTDIR\presettings.dat
+    Delete /REBOOTOK $INSTDIR\TODO.txt
+	Delete /REBOOTOK $INSTDIR\LICENSE-fra.txt
+    Delete /REBOOTOK $INSTDIR\LICENSE-eng.txt
+    Delete /REBOOTOK $INSTDIR\CHANGELOG.txt
+    Delete /REBOOTOK $INSTDIR\README.txt
     Delete /REBOOTOK $INSTDIR\IMinGame.exe
     Delete /REBOOTOK $INSTDIR\IMinGameHook.dll
     DeleteRegValue HKLM "${REGKEY}\Components" Main
@@ -132,6 +160,7 @@ SectionEnd
 Section -un.post UNSEC0001
     DeleteRegKey HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)"
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\$(^Name).lnk"
+	Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\$(^Readme).lnk"
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\$(^UninstallLink).lnk"
     Delete /REBOOTOK $INSTDIR\uninstall.exe
     DeleteRegValue HKLM "${REGKEY}" StartMenuGroup
@@ -161,10 +190,3 @@ Function un.onInit
     !insertmacro SELECT_UNSECTION Main ${UNSEC0000}
 FunctionEnd
 
-# Installer Language Strings
-# TODO Update the Language Strings with the appropriate translations.
-
-LangString ^UninstallLink ${LANG_ENGLISH} "Uninstall $(^Name)"
-LangString ^UninstallLink ${LANG_SPANISH} "Desinstale $(^Name)"
-LangString ^UninstallLink ${LANG_FRENCH} "Désinstaller $(^Name)"
-LangString ^UninstallLink ${LANG_GERMAN} "Deinstallieren  $(^Name)"

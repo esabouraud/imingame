@@ -1,0 +1,9 @@
+2009-07-30 version 0.1.0:
+	First release of IMinGames, based off Pier Castonguay's "NowPlayingGames" v1.13.
+	* Code refactoring.
+	* Support hooking processes at launch and exit instead of pooling process list.
+	* Settings in plain text file.
+    * Multiple language support, currently English and French.
+	* NSIS graphical installer.
+	* New tray icon.
+	* Released with a BSD-style license.
