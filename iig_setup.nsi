@@ -5,13 +5,16 @@ Name IMinGame
 
 # General Symbol Definitions
 !define REGKEY "SOFTWARE\$(^Name)"
-!define VERSION 0.1.0
+!define VERSION 0.1.1
 !define COMPANY "Eric Sabouraud"
 !define URL http://sourceforge.net/projects/imingame/
 
 
-
-
+# Persistent language selection
+!define MUI_LANGDLL_REGISTRY_ROOT "HKLM" 
+!define MUI_LANGDLL_REGISTRY_KEY "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)"
+!define MUI_LANGDLL_REGISTRY_VALUENAME "Installer Language"
+ 
 # MultiUser Symbol Definitions
 !define MULTIUSER_EXECUTIONLEVEL Power
 !define MULTIUSER_INSTALLMODE_DEFAULT_CURRENTUSER
@@ -76,12 +79,12 @@ LangString PresetLang ${LANG_FRENCH} "1"
 #LangString PresetLang ${LANG_GERMAN} "3"
 
 # Installer attributes
-OutFile imingame-0.1.0-setup.exe
+OutFile imingame-0.1.1-setup.exe
 InstallDir IMinGame
 CRCCheck on
 XPStyle on
 ShowInstDetails show
-VIProductVersion 0.1.0.0
+VIProductVersion 0.1.1.0
 VIAddVersionKey /LANG=${LANG_ENGLISH} ProductName IMinGame
 VIAddVersionKey /LANG=${LANG_ENGLISH} ProductVersion "${VERSION}"
 VIAddVersionKey /LANG=${LANG_ENGLISH} CompanyName "${COMPANY}"
@@ -160,7 +163,7 @@ SectionEnd
 Section -un.post UNSEC0001
     DeleteRegKey HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)"
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\$(^Name).lnk"
-	Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\$(^Readme).lnk"
+	Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\Readme.lnk"
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\$(^UninstallLink).lnk"
     Delete /REBOOTOK $INSTDIR\uninstall.exe
     DeleteRegValue HKLM "${REGKEY}" StartMenuGroup
@@ -185,6 +188,7 @@ FunctionEnd
 
 # Uninstaller functions
 Function un.onInit
+	!insertmacro MUI_UNGETLANGUAGE
     !insertmacro MUI_STARTMENU_GETFOLDER Application $StartMenuGroup
     !insertmacro MULTIUSER_UNINIT
     !insertmacro SELECT_UNSECTION Main ${UNSEC0000}
