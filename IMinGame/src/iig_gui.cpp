@@ -103,7 +103,7 @@ void BuildGUI(HINSTANCE hInst, const SystemSettings& settings)
     m_wc.hCursor = LoadCursor(NULL,IDC_ARROW);
     m_wc.hbrBackground = (HBRUSH)(COLOR_WINDOW+1);
     m_wc.lpszMenuName = NULL;
-    m_wc.lpszClassName = _T("IMinGame");
+    m_wc.lpszClassName = APP_NAME;
     m_wc.hIconSm = NULL;
     RegisterClassEx( &m_wc );
 
@@ -113,7 +113,7 @@ void BuildGUI(HINSTANCE hInst, const SystemSettings& settings)
     rect.top=0;
     rect.right=400;
     rect.bottom=140;
-    gHwnd = CreateWindow(_T("IMinGame"), APP_NAME _T(" v") APP_VERSION, WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX, CW_USEDEFAULT, CW_USEDEFAULT, rect.right, rect.bottom, NULL, NULL, hInst, NULL );
+    gHwnd = CreateWindow(APP_NAME, APP_NAME _T(" v") APP_VERSION, WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX, CW_USEDEFAULT, CW_USEDEFAULT, rect.right, rect.bottom, NULL, NULL, hInst, NULL );
     AdjustWindowRect( &rect, WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX, false);	
 
     CreateWindow(_T("STATIC"), getLangString(settings.lang, IIG_LANGSTR_USERMSGLBL),  WS_CHILD | WS_VISIBLE | SS_SIMPLE, 5, 5, 70, 20, gHwnd, NULL, hInst, NULL);
@@ -144,7 +144,7 @@ void BuildGUI(HINSTANCE hInst, const SystemSettings& settings)
     tnd.uFlags = NIF_MESSAGE|NIF_ICON|NIF_TIP;
     tnd.uCallbackMessage = WM_TRAYMESSAGE;
     tnd.hIcon = LoadIcon(hInst,MAKEINTRESOURCE(IDI_ICON1));
-    _tcscpy(tnd.szTip,_T("IMinGame"));
+    _tcscpy(tnd.szTip, APP_NAME);
     Shell_NotifyIcon(NIM_ADD,&tnd);
 
     // Settings

@@ -184,7 +184,7 @@ static bool tryProcess(DWORD processId) {
 static void ClearMessage()
 {
 	setMsnNowPlaying(_T(""), _T(""), false, gHwnd);
-	updateWindowText(_T(" - Game Title"));
+	updateWindowText(getLangString(gSystemSettings.lang, IIG_LANGSTR_GAMENAMEDEF));
 
 	gGameProcessId = 0;
 }
