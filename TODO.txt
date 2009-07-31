@@ -5,6 +5,9 @@ Maintenance :
 
 New features ideas :
 
+* as a workaround for games not detected or incorrect window name, and
+  optimization, build incrementally a local game process and name list.
+* optimization : build incrementally a local non-game process blacklist.
 * add an option to display in-game time
 * add option to provide steam profile "join game" link ?
 * redo GUI with a modern framework ?

@@ -71,11 +71,11 @@ BOOL WINAPI DllMain(
 		PostMessage(cbHwnd, WM_IIG_PROCSTOP, NULL, GetCurrentProcessId());
 		break;
 	case DLL_THREAD_ATTACH:
-		// Limit to one thread creation notification per process
-		static BOOL threadNotify = FALSE;
-		if (!threadNotify) {
+		// Empiricallly, the minimum number of thread launches to hook (to catch most games) seems to be 2
+		static int threadNotify = 2;
+		if (threadNotify) {
 			PostMessage(cbHwnd, WM_IIG_PROCSTART, NULL, GetCurrentProcessId());
-			threadNotify = TRUE;
+			--threadNotify;
 		}
 		break;
 	}

@@ -5,7 +5,7 @@ Name IMinGame
 
 # General Symbol Definitions
 !define REGKEY "SOFTWARE\$(^Name)"
-!define VERSION 0.1.1
+!define VERSION 0.1.2
 !define COMPANY "Eric Sabouraud"
 !define URL http://sourceforge.net/projects/imingame/
 
@@ -79,13 +79,13 @@ LangString PresetLang ${LANG_FRENCH} "1"
 #LangString PresetLang ${LANG_GERMAN} "3"
 
 # Installer attributes
-OutFile imingame-0.1.1-setup.exe
+OutFile imingame-${VERSION}-setup.exe
 InstallDir IMinGame
 CRCCheck on
 XPStyle on
 ShowInstDetails show
-VIProductVersion 0.1.1.0
-VIAddVersionKey /LANG=${LANG_ENGLISH} ProductName IMinGame
+VIProductVersion ${VERSION}.0
+VIAddVersionKey /LANG=${LANG_ENGLISH} ProductName "IMinGame"
 VIAddVersionKey /LANG=${LANG_ENGLISH} ProductVersion "${VERSION}"
 VIAddVersionKey /LANG=${LANG_ENGLISH} CompanyName "${COMPANY}"
 VIAddVersionKey /LANG=${LANG_ENGLISH} CompanyWebsite "${URL}"
