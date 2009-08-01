@@ -35,6 +35,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <tchar.h>
 
-extern void setMsnNowPlaying(const TCHAR* userMessage, const TCHAR* gameName, bool asGame, HWND hSender) ;
+extern void setMsnNowPlaying(const TCHAR* userMessage, const TCHAR* gameName, BOOL asGame, HWND hSender) ;
 
 #endif

@@ -53,7 +53,7 @@ typedef void (*HookUninstaller)();
 HWND gHwnd = NULL;
 
 
-static bool gHidden = true;
+static BOOL gHidden = TRUE;
 
 static DWORD gGameProcessId = 0;
 
@@ -104,10 +104,10 @@ static BOOL CALLBACK EnumWindowsProc( HWND hwnd, LPARAM lParam )
 /**
 	\brief Check if a process is a game, trigger status update if it is
 	\param [in] processId : PID of the process to check
-	\return true if the process was indeed a game
+	\return TRUE if the process was indeed a game
 */
-static bool tryProcess(DWORD processId) {
-	bool isPlaying = false;
+static BOOL tryProcess(DWORD processId) {
+	BOOL isPlaying = FALSE;
 	DWORD cbNeeded, cProcessesModules;
     HMODULE hMod[1024];
 	TCHAR szProcessName[MAX_PATH] = TEXT("<unknown>");
@@ -119,38 +119,28 @@ static bool tryProcess(DWORD processId) {
 	if (NULL != hProcess) {
 		if ( EnumProcessModules( hProcess, hMod, sizeof(hMod), &cbNeeded) ) {
 			TCHAR szProcessName[1024+64];
+			int i = 0;
 			// Get the process name.
 			GetModuleBaseName( hProcess, hMod[0], szProcessName, sizeof(szProcessName)/sizeof(TCHAR) );
 			
-			bool isWhiteListed = false;
-			for (unsigned int i = 0; i < gSystemSettings.whiteListSize; ++i) {
-				if (_tcsicmp(szProcessName, gSystemSettings.whiteList[i].procname) == 0) {
-					isWhiteListed = true;
-					setMsnNowPlaying(gSystemSettings.userMessage, gSystemSettings.whiteList[i].windowName, gSystemSettings.asGame, gHwnd);
-					updateWindowText(gSystemSettings.whiteList[i].windowName);
-					gGameProcessId = processId;
-					isPlaying = true;
-					break;
-				}
-			}
-
-			if (!isWhiteListed) {
-				bool isBlacklisted = false;
-				for (unsigned int i = 0; i < gSystemSettings.blackListSize; ++i) {
-					if (_tcsicmp(szProcessName, gSystemSettings.blackList[i].procname) == 0) {
-						isBlacklisted = true;
-						break;
-					}
-				}
-				
-				if(!isBlacklisted) {
-					bool hasModuleLoaded = false;
+			i = bwListSearch(szProcessName, gSystemSettings.whiteList, 0, gSystemSettings.whiteListSize);
+			if (i >= 0) {
+				// Process is whitelisted, update status immediately
+				setMsnNowPlaying(gSystemSettings.userMessage, gSystemSettings.whiteList[i].windowName, gSystemSettings.asGame, gHwnd);
+				updateWindowText(gSystemSettings.whiteList[i].windowName);
+				gGameProcessId = processId;
+				isPlaying = TRUE;
+			} else {
+				if(!isInBWList(szProcessName, gSystemSettings.blackList, gSystemSettings.blackListSize)) {
+					// Process is not blacklisted, check its loaded modules
+					BOOL hasModuleLoaded = FALSE;
+					UINT j = 0, k = 0;
 					cProcessesModules = cbNeeded / sizeof(HMODULE);
-					for (unsigned int k = 1; k < cProcessesModules && !hasModuleLoaded; ++k) {
+					for (k = 1; k < cProcessesModules && !hasModuleLoaded; ++k) {
 						GetModuleBaseName( hProcess, hMod[k], szModuleName, sizeof(szModuleName)/sizeof(TCHAR) );
-						for (unsigned int i = 0; tabModulesList[i] != NULL; ++i) {
-							if (_tcsicmp(szModuleName, tabModulesList[i]) == 0) {
-								hasModuleLoaded = true;
+						for (j = 0; tabModulesList[j] != NULL; ++j) {
+							if (_tcsicmp(szModuleName, tabModulesList[j]) == 0) {
+								hasModuleLoaded = TRUE;
 								break;
 							}
 						}
@@ -161,7 +151,7 @@ static bool tryProcess(DWORD processId) {
 								SetTimer(gHwnd, 0, 5000, NULL);
 							}
 							gGameProcessId = processId;
-							isPlaying = true;
+							isPlaying = TRUE;
 							break;
 						}
 					}
@@ -180,7 +170,7 @@ static bool tryProcess(DWORD processId) {
 */
 static void ClearMessage()
 {
-	setMsnNowPlaying(_T(""), _T(""), false, gHwnd);
+	setMsnNowPlaying(_T(""), _T(""), FALSE, gHwnd);
 	updateWindowText(getLangString(gSystemSettings.lang, IIG_LANGSTR_GAMENAMEDEF));
 
 	gGameProcessId = 0;
@@ -292,14 +282,14 @@ LRESULT WINAPI IMinGameProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
         switch(LOWORD(wParam))
         {
 		case ID_BUTTON_RELOAD:
-			LoadSettings(gSystemSettings);
+			LoadSettings(&gSystemSettings);
 			PoolProcesses();
 			break;
 		case ID_BUTTON_REFRESH:
 			PoolProcesses();
 			break;
         case ID_BUTTON_MINIMIZE:
-            gHidden = true;
+            gHidden = TRUE;
             ShowWindow( gHwnd, SW_HIDE );
             break;
         case ID_BUTTON_EXIT:
@@ -314,7 +304,7 @@ LRESULT WINAPI IMinGameProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
                     TCHAR text[63];
                     GetWindowText((HWND)lParam, text, 63);
                     _tcscpy(gSystemSettings.userMessage, text);
-                    SaveSettings(gSystemSettings);
+                    SaveSettings(&gSystemSettings);
                 }
             }
             break;
@@ -326,7 +316,7 @@ LRESULT WINAPI IMinGameProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
                     TCHAR text[10];
                     GetWindowText((HWND)lParam, text, 10);
                     gSystemSettings.interval = _ttoi(text);
-                    SaveSettings(gSystemSettings);
+                    SaveSettings(&gSystemSettings);
 					if (gSystemSettings.legacyTimer) {
 						SetTimer( gHwnd, 0, gSystemSettings.interval * 1000, (TIMERPROC)NULL );
 					}
@@ -336,14 +326,14 @@ LRESULT WINAPI IMinGameProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
         case ID_BUTTON_MUSIC:
             SendMessage(optAsMusic,BM_SETCHECK,BST_CHECKED,0);
             SendMessage(optAsGame,BM_SETCHECK,BST_UNCHECKED,0);
-            gSystemSettings.asGame = false;
-            SaveSettings(gSystemSettings);
+            gSystemSettings.asGame = FALSE;
+            SaveSettings(&gSystemSettings);
             break;
         case ID_BUTTON_GAME:
             SendMessage(optAsMusic,BM_SETCHECK,BST_UNCHECKED,0);
             SendMessage(optAsGame,BM_SETCHECK,BST_CHECKED,0);
-            gSystemSettings.asGame = true;
-            SaveSettings(gSystemSettings);
+            gSystemSettings.asGame = TRUE;
+            SaveSettings(&gSystemSettings);
             break;
         }
         return 0;
@@ -354,7 +344,7 @@ LRESULT WINAPI IMinGameProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
             {
             case SC_MINIMIZE:
                 {
-                    gHidden = true;
+                    gHidden = TRUE;
                     ShowWindow( gHwnd, SW_HIDE );
                     return TRUE;
                 }
@@ -370,20 +360,26 @@ LRESULT WINAPI IMinGameProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 }
 
 
-INT WINAPI WinMain( HINSTANCE hInst, HINSTANCE, LPSTR, int )
+//INT WINAPI WinMain( HINSTANCE hInst, HINSTANCE, LPSTR, int )
+int APIENTRY _tWinMain(
+	HINSTANCE hInst,
+	HINSTANCE hPrevInstance,
+	LPTSTR    lpCmdLine,
+	int       nCmdShow)
 {
     HANDLE hMutex;
+	NOTIFYICONDATA tnd, tnid;
+	HookInstaller installHook = NULL;
+	HookUninstaller uninstallHook = NULL;
+
     hMutex = CreateMutex(NULL, TRUE, _T("NOWPLAYINGMUTEX"));
     if(GetLastError() == ERROR_ALREADY_EXISTS)
         return 0;
 
-	LoadSettings(gSystemSettings);
-
-	BuildGUI(hInst, gSystemSettings);
-
+	LoadSettings(&gSystemSettings);
+	BuildGUI(hInst, &gSystemSettings);
     ShowWindow(gHwnd, SW_SHOWDEFAULT );
 
-    NOTIFYICONDATA tnd;
     tnd.cbSize = sizeof(NOTIFYICONDATA);
     tnd.hWnd = gHwnd;
     tnd.uID = 0;
@@ -394,9 +390,6 @@ INT WINAPI WinMain( HINSTANCE hInst, HINSTANCE, LPSTR, int )
     Shell_NotifyIcon(NIM_MODIFY,&tnd);
 
     
-	HookInstaller installHook = NULL;
-	HookUninstaller uninstallHook = NULL;
-
 	if (gSystemSettings.legacyTimer) {
 		SetTimer( gHwnd, 0, gSystemSettings.interval * 1000, (TIMERPROC)NULL );
 	} else {
@@ -422,21 +415,23 @@ INT WINAPI WinMain( HINSTANCE hInst, HINSTANCE, LPSTR, int )
 	PoolProcesses();	
 
     // Message Loop
-    MSG msg={0};
-    BOOL bRet;
-    while( (bRet = GetMessage( &msg, 0, 0, 0 )) != 0)
-    { 
-        if (bRet == -1)
-            break;
-        else
-        {
-            if(!IsDialogMessage(gHwnd, &msg))
-            {
-                TranslateMessage(&msg); 
-                DispatchMessage(&msg); 
-            }
-        }
-    }
+	{
+		MSG msg={0};
+		BOOL bRet;
+		while( (bRet = GetMessage( &msg, 0, 0, 0 )) != 0)
+		{ 
+			if (bRet == -1)
+				break;
+			else
+			{
+				if(!IsDialogMessage(gHwnd, &msg))
+				{
+					TranslateMessage(&msg); 
+					DispatchMessage(&msg); 
+				}
+			}
+		}
+	}
 
     // Quit
 	if (gSystemSettings.legacyTimer) {
@@ -447,14 +442,12 @@ INT WINAPI WinMain( HINSTANCE hInst, HINSTANCE, LPSTR, int )
 
 
 	ClearMessage();
+    SaveSettings(&gSystemSettings);
 
-    SaveSettings(gSystemSettings);
-
-    NOTIFYICONDATA tnid;
-    tnid.cbSize=sizeof(NOTIFYICONDATA);
-    tnid.hWnd=gHwnd;
-    tnid.uID=0;
-    Shell_NotifyIcon(NIM_DELETE,&tnid);
+	tnid.cbSize=sizeof(NOTIFYICONDATA);
+	tnid.hWnd=gHwnd;
+	tnid.uID=0;
+	Shell_NotifyIcon(NIM_DELETE,&tnid);
 
     DestroyWindow(gHwnd);
     UnregisterClass( _T("IMinGame"), hInst );

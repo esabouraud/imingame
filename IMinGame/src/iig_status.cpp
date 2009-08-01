@@ -38,7 +38,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define MSNGameString  _T("\\0Games\\0%d\\0%s\\0%s\\0%s\\0")
 #define MSNFormat      _T("{0} - {1}")
 
-void setMsnNowPlaying(const TCHAR* userMessage, const TCHAR* gameName, bool asGame, HWND hSender) {
+void setMsnNowPlaying(const TCHAR* userMessage, const TCHAR* gameName, BOOL asGame, HWND hSender) {
     COPYDATASTRUCT msndata;
     TCHAR buffer[500];
     HWND msnui = NULL;

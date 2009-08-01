@@ -48,33 +48,42 @@ LRESULT CALLBACK CallWndProc(int code,WPARAM wParam,LPARAM lParam) {
 	return CallNextHookEx(hhk,code,wParam,lParam);
 }
 
-extern "C" __declspec(dllexport) void install(HWND hWnd) {
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+__declspec(dllexport) void install(HWND hWnd) {
 	cbHwnd = hWnd;
-	hhk = SetWindowsHookEx(WH_CBT, CallWndProc, hinst, NULL);
+	hhk = SetWindowsHookEx(WH_CBT, CallWndProc, hinst, 0);
 }
-extern "C" __declspec(dllexport) void uninstall() {
+__declspec(dllexport) void uninstall() {
 	UnhookWindowsHookEx(hhk); 
 }
+
+
+#ifdef __cplusplus
+}
+#endif
 
 BOOL WINAPI DllMain(
 	__in  HINSTANCE hinstDLL,
 	__in  DWORD fdwReason,
 	__in  LPVOID lpvReserved
   ) {
+	static int threadNotify = 2;
 	hinst = hinstDLL;
 
 	switch (fdwReason) {
 	case DLL_PROCESS_ATTACH:
-		PostMessage(cbHwnd, WM_IIG_PROCSTART, NULL, GetCurrentProcessId());
+		PostMessage(cbHwnd, WM_IIG_PROCSTART, 0, GetCurrentProcessId());
 		break;
 	case DLL_PROCESS_DETACH:
-		PostMessage(cbHwnd, WM_IIG_PROCSTOP, NULL, GetCurrentProcessId());
+		PostMessage(cbHwnd, WM_IIG_PROCSTOP, 0, GetCurrentProcessId());
 		break;
 	case DLL_THREAD_ATTACH:
 		// Empiricallly, the minimum number of thread launches to hook (to catch most games) seems to be 2
-		static int threadNotify = 2;
 		if (threadNotify) {
-			PostMessage(cbHwnd, WM_IIG_PROCSTART, NULL, GetCurrentProcessId());
+			PostMessage(cbHwnd, WM_IIG_PROCSTART, 0, GetCurrentProcessId());
 			--threadNotify;
 		}
 		break;

@@ -36,26 +36,40 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <windows.h>
 #include <tchar.h>
 
+struct bwListElt {
+	TCHAR procname[256];
+	TCHAR windowName[256];
+};
+
 typedef struct _SystemSettings
 {
-    TCHAR userMessage[63];
-    UINT interval;
-    bool asGame;
-	bool legacyTimer;
+	TCHAR userMessage[63];
+	UINT interval;
+	BOOL asGame;
+	BOOL legacyTimer;
 	UINT lang;
-	struct {
-		TCHAR procname[256];
-		TCHAR windowName[256];
-	} whiteList[20];
+
+	struct bwListElt whiteList[50];
 	UINT whiteListSize;
-	struct {
-		TCHAR procname[256];
-	} blackList[40];
+
+	struct bwListElt blackList[100];
 	UINT blackListSize;
 } SystemSettings; 
 
-extern void SaveSettings(const SystemSettings& settings);
+extern void SaveSettings(const SystemSettings* settings);
 
-extern void LoadSettings(SystemSettings& settings);
+extern void LoadSettings(SystemSettings* settings);
+
+/**
+	\brief Binary search for process name in sorted black/white list
+	\param [in] procname: process name to look for
+	\param [in] list: list to search
+	\param [in] low: lower bound of list
+	\param [in] high : higher bound of list
+	\return index in;list if found, else -1
+*/
+extern int bwListSearch(const TCHAR* procname, const struct bwListElt list[], int low, int high);
+
+extern BOOL isInBWList(const TCHAR* procname, const struct bwListElt list[], UINT num);
 
 #endif

@@ -58,7 +58,7 @@ extern HWND lblGame;
 
 extern void updateWindowText(const TCHAR* gameName);
 
-extern void BuildGUI(HINSTANCE hInst, const SystemSettings& settings);
+extern void BuildGUI(HINSTANCE hInst, const SystemSettings* settings);
 
 #define IIG_LANGSTR_MACRO( id, eng, fre ) IIG_LANGSTR_##id,
 typedef enum _IIG_LANGSTR_IDX {

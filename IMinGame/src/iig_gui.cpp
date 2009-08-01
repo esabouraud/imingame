@@ -86,10 +86,10 @@ void updateWindowText(const TCHAR* gameName) {
 	RECT rect;
     SendMessage(lblGame, WM_SETTEXT, 0, (LPARAM)gameName);
     rect.left = 0; rect.top = 0; rect.right = 400; rect.bottom = 140;
-    InvalidateRect(gHwnd, &rect, true);
+    InvalidateRect(gHwnd, &rect, TRUE);
 }
 
-void BuildGUI(HINSTANCE hInst, const SystemSettings& settings)
+void BuildGUI(HINSTANCE hInst, const SystemSettings* settings)
 {
 	WNDCLASSEX m_wc;
 
@@ -107,57 +107,61 @@ void BuildGUI(HINSTANCE hInst, const SystemSettings& settings)
     m_wc.hIconSm = NULL;
     RegisterClassEx( &m_wc );
 
-    // Windows
-    RECT rect;
-    rect.left=0;
-    rect.top=0;
-    rect.right=400;
-    rect.bottom=140;
-    gHwnd = CreateWindow(APP_NAME, APP_NAME _T(" v") APP_VERSION, WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX, CW_USEDEFAULT, CW_USEDEFAULT, rect.right, rect.bottom, NULL, NULL, hInst, NULL );
-    AdjustWindowRect( &rect, WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX, false);	
+	{
+		// Windows
+		RECT rect;
+		rect.left=0;
+		rect.top=0;
+		rect.right=400;
+		rect.bottom=140;
+		gHwnd = CreateWindow(APP_NAME, APP_NAME _T(" v") APP_VERSION, WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX, CW_USEDEFAULT, CW_USEDEFAULT, rect.right, rect.bottom, NULL, NULL, hInst, NULL );
+		AdjustWindowRect( &rect, WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX, FALSE);	
 
-    CreateWindow(_T("STATIC"), getLangString(settings.lang, IIG_LANGSTR_USERMSGLBL),  WS_CHILD | WS_VISIBLE | SS_SIMPLE, 5, 5, 70, 20, gHwnd, NULL, hInst, NULL);
-    txtUserMessage = CreateWindowEx(WS_EX_CLIENTEDGE, _T("EDIT"), _T(""),  WS_CHILD | WS_VISIBLE | ES_RIGHT, 75, 3, 120, 20, gHwnd, (HMENU)ID_EDIT_TITLE, hInst, NULL);
-    CreateWindow(_T("STATIC"), _T("  -  "),  WS_CHILD | WS_VISIBLE | SS_SIMPLE, 195, 5, 20, 20, gHwnd, NULL, hInst, NULL);
-	lblGame = CreateWindow(_T("STATIC"), getLangString(settings.lang, IIG_LANGSTR_GAMENAMEDEF),  WS_CHILD | WS_VISIBLE | SS_SIMPLE, 215, 5, 480, 20, gHwnd, NULL, hInst, NULL);
+		CreateWindow(_T("STATIC"), getLangString(settings->lang, IIG_LANGSTR_USERMSGLBL),  WS_CHILD | WS_VISIBLE | SS_SIMPLE, 5, 5, 70, 20, gHwnd, NULL, hInst, NULL);
+		txtUserMessage = CreateWindowEx(WS_EX_CLIENTEDGE, _T("EDIT"), _T(""),  WS_CHILD | WS_VISIBLE | ES_RIGHT, 75, 3, 120, 20, gHwnd, (HMENU)ID_EDIT_TITLE, hInst, NULL);
+		CreateWindow(_T("STATIC"), _T("  -  "),  WS_CHILD | WS_VISIBLE | SS_SIMPLE, 195, 5, 20, 20, gHwnd, NULL, hInst, NULL);
+		lblGame = CreateWindow(_T("STATIC"), getLangString(settings->lang, IIG_LANGSTR_GAMENAMEDEF),  WS_CHILD | WS_VISIBLE | SS_SIMPLE, 215, 5, 480, 20, gHwnd, NULL, hInst, NULL);
 
-	if (settings.legacyTimer) {
-		CreateWindow(_T("STATIC"), getLangString(settings.lang, IIG_LANGSTR_REFRESHTIMERLBL),  WS_CHILD | WS_VISIBLE | SS_SIMPLE, 5, 28, 125, 20, gHwnd, NULL, hInst, NULL);
-		txtInterval = CreateWindowEx(WS_EX_CLIENTEDGE, _T("EDIT"), _T(""),  WS_CHILD | WS_VISIBLE | ES_NUMBER, 120, 26, 23, 20, gHwnd, (HMENU)ID_EDIT_INTERVAL, hInst, NULL);
-		CreateWindow(_T("STATIC"), _T("s"),  WS_CHILD | WS_VISIBLE | SS_SIMPLE, 150, 28, 30, 20, gHwnd, NULL, hInst, NULL);
+		if (settings->legacyTimer) {
+			CreateWindow(_T("STATIC"), getLangString(settings->lang, IIG_LANGSTR_REFRESHTIMERLBL),  WS_CHILD | WS_VISIBLE | SS_SIMPLE, 5, 28, 125, 20, gHwnd, NULL, hInst, NULL);
+			txtInterval = CreateWindowEx(WS_EX_CLIENTEDGE, _T("EDIT"), _T(""),  WS_CHILD | WS_VISIBLE | ES_NUMBER, 120, 26, 23, 20, gHwnd, (HMENU)ID_EDIT_INTERVAL, hInst, NULL);
+			CreateWindow(_T("STATIC"), _T("s"),  WS_CHILD | WS_VISIBLE | SS_SIMPLE, 150, 28, 30, 20, gHwnd, NULL, hInst, NULL);
+		}
+
+		//CreateWindow(_T("STATIC"), _T("Steam Profile:"),  WS_CHILD | WS_VISIBLE | SS_SIMPLE, 200, 28, 125, 20, gHwnd, NULL, hInst, NULL);
+		//txtSteamProfile = CreateWindowEx(WS_EX_CLIENTEDGE, _T("EDIT"), _T(""),  WS_CHILD | WS_VISIBLE | ES_NUMBER, 300, 26, 80, 20, gHwnd, (HMENU)ID_EDIT_STEAM, hInst, NULL);
+
+		optAsMusic = CreateWindow(_T("BUTTON"), getLangString(settings->lang, IIG_LANGSTR_ACTMUSICLBL),  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTORADIOBUTTON, 5, 50, 400, 20, gHwnd, (HMENU)ID_BUTTON_MUSIC, hInst, NULL);
+		optAsGame = CreateWindow(_T("BUTTON"), getLangString(settings->lang, IIG_LANGSTR_ACTGAMELBL),  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTORADIOBUTTON, 5, 67, 400, 20, gHwnd, (HMENU)ID_BUTTON_GAME, hInst, NULL);
+
+		//CreateWindow(_T("BUTTON"), getLangString(settings->lang, IIG_LANGSTR_RELOADLBL),  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON, 2, 90, 104, 20, gHwnd, (HMENU)ID_BUTTON_RELOAD, hInst, NULL);
+		CreateWindow(_T("BUTTON"), getLangString(settings->lang, IIG_LANGSTR_REFRESHLBL),  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON, 108, 90, 98, 20, gHwnd, (HMENU)ID_BUTTON_REFRESH, hInst, NULL);
+		CreateWindow(_T("BUTTON"), getLangString(settings->lang, IIG_LANGSTR_MINITRAYLBL),  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON, 208, 90, 120, 20, gHwnd, (HMENU)ID_BUTTON_MINIMIZE, hInst, NULL);
+		CreateWindow(_T("BUTTON"), getLangString(settings->lang, IIG_LANGSTR_EXITLBL),  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON, 330, 90, 60, 20, gHwnd, (HMENU)ID_BUTTON_EXIT, hInst, NULL);
 	}
+	
+	{
+		// Icon
+		NOTIFYICONDATA tnd;
+		TCHAR strInterval[10];
 
-	//CreateWindow(_T("STATIC"), _T("Steam Profile:"),  WS_CHILD | WS_VISIBLE | SS_SIMPLE, 200, 28, 125, 20, gHwnd, NULL, hInst, NULL);
-    //txtSteamProfile = CreateWindowEx(WS_EX_CLIENTEDGE, _T("EDIT"), _T(""),  WS_CHILD | WS_VISIBLE | ES_NUMBER, 300, 26, 80, 20, gHwnd, (HMENU)ID_EDIT_STEAM, hInst, NULL);
+		tnd.cbSize = sizeof(NOTIFYICONDATA);
+		tnd.hWnd = gHwnd;
+		tnd.uID = 0;
+		tnd.uFlags = NIF_MESSAGE|NIF_ICON|NIF_TIP;
+		tnd.uCallbackMessage = WM_TRAYMESSAGE;
+		tnd.hIcon = LoadIcon(hInst,MAKEINTRESOURCE(IDI_ICON1));
+		_tcscpy(tnd.szTip, APP_NAME);
+		Shell_NotifyIcon(NIM_ADD,&tnd);
 
-    optAsMusic = CreateWindow(_T("BUTTON"), getLangString(settings.lang, IIG_LANGSTR_ACTMUSICLBL),  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTORADIOBUTTON, 5, 50, 400, 20, gHwnd, (HMENU)ID_BUTTON_MUSIC, hInst, NULL);
-    optAsGame = CreateWindow(_T("BUTTON"), getLangString(settings.lang, IIG_LANGSTR_ACTGAMELBL),  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTORADIOBUTTON, 5, 67, 400, 20, gHwnd, (HMENU)ID_BUTTON_GAME, hInst, NULL);
-
-	//CreateWindow(_T("BUTTON"), getLangString(settings.lang, IIG_LANGSTR_RELOADLBL),  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON, 2, 90, 104, 20, gHwnd, (HMENU)ID_BUTTON_RELOAD, hInst, NULL);
-    CreateWindow(_T("BUTTON"), getLangString(settings.lang, IIG_LANGSTR_REFRESHLBL),  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON, 108, 90, 98, 20, gHwnd, (HMENU)ID_BUTTON_REFRESH, hInst, NULL);
-    CreateWindow(_T("BUTTON"), getLangString(settings.lang, IIG_LANGSTR_MINITRAYLBL),  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON, 208, 90, 120, 20, gHwnd, (HMENU)ID_BUTTON_MINIMIZE, hInst, NULL);
-    CreateWindow(_T("BUTTON"), getLangString(settings.lang, IIG_LANGSTR_EXITLBL),  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON, 330, 90, 60, 20, gHwnd, (HMENU)ID_BUTTON_EXIT, hInst, NULL);
-
-    // Icon
-    NOTIFYICONDATA tnd;
-    tnd.cbSize = sizeof(NOTIFYICONDATA);
-    tnd.hWnd = gHwnd;
-    tnd.uID = 0;
-    tnd.uFlags = NIF_MESSAGE|NIF_ICON|NIF_TIP;
-    tnd.uCallbackMessage = WM_TRAYMESSAGE;
-    tnd.hIcon = LoadIcon(hInst,MAKEINTRESOURCE(IDI_ICON1));
-    _tcscpy(tnd.szTip, APP_NAME);
-    Shell_NotifyIcon(NIM_ADD,&tnd);
-
-    // Settings
-
-    TCHAR strInterval[10];
-    wsprintf(strInterval, _T("%u"), settings.interval);
-    SendMessage(txtUserMessage, WM_SETTEXT, NULL, (LPARAM)settings.userMessage);
-    SendMessage(txtInterval, WM_SETTEXT, NULL, (LPARAM)strInterval);
-    if(settings.asGame)
-        SendMessage(optAsGame,BM_SETCHECK,BST_CHECKED,0);
-    else
-        SendMessage(optAsMusic,BM_SETCHECK,BST_CHECKED,0);
+		// Settings
+		wsprintf(strInterval, _T("%u"), settings->interval);
+		SendMessage(txtUserMessage, WM_SETTEXT, 0, (LPARAM)settings->userMessage);
+		SendMessage(txtInterval, WM_SETTEXT, 0, (LPARAM)strInterval);
+		if(settings->asGame)
+			SendMessage(optAsGame,BM_SETCHECK,BST_CHECKED,0);
+		else
+			SendMessage(optAsMusic,BM_SETCHECK,BST_CHECKED,0);
+	}
 
 }
