@@ -16,7 +16,7 @@ information to MSN Messenger' interface, like Pidgin (http://www.pidgin.im)
 with the musictracker plugin (http://code.google.com/p/pidgin-musictracker).
 
 * Compatibility :
-	Windows XP/Vista 32 bits
+	Windows 2K/XP/Vista 32 bits
 	DirectX/OpenGL games
 	MSN / Live Messenger / Pidgin (with Musictracker)
 

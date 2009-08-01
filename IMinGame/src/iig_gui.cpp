@@ -47,7 +47,7 @@ extern HWND gHwnd;
 extern LRESULT WINAPI IMinGameProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam );
 
 #define APP_NAME    _T("IMinGame")
-#define APP_VERSION _T("0.1.2")
+#define APP_VERSION _T("0.1.3")
 
 #define IIG_LANGSTR_MACRO( id, eng, fre ) _T(eng),
 static const TCHAR* engLangStr[] = {
@@ -118,7 +118,8 @@ void BuildGUI(HINSTANCE hInst, const SystemSettings& settings)
 
     CreateWindow(_T("STATIC"), getLangString(settings.lang, IIG_LANGSTR_USERMSGLBL),  WS_CHILD | WS_VISIBLE | SS_SIMPLE, 5, 5, 70, 20, gHwnd, NULL, hInst, NULL);
     txtUserMessage = CreateWindowEx(WS_EX_CLIENTEDGE, _T("EDIT"), _T(""),  WS_CHILD | WS_VISIBLE | ES_RIGHT, 75, 3, 120, 20, gHwnd, (HMENU)ID_EDIT_TITLE, hInst, NULL);
-    lblGame = CreateWindow(_T("STATIC"), getLangString(settings.lang, IIG_LANGSTR_GAMENAMEDEF),  WS_CHILD | WS_VISIBLE | SS_SIMPLE, 195, 5, 500, 20, gHwnd, NULL, hInst, NULL);
+    CreateWindow(_T("STATIC"), _T("  -  "),  WS_CHILD | WS_VISIBLE | SS_SIMPLE, 195, 5, 20, 20, gHwnd, NULL, hInst, NULL);
+	lblGame = CreateWindow(_T("STATIC"), getLangString(settings.lang, IIG_LANGSTR_GAMENAMEDEF),  WS_CHILD | WS_VISIBLE | SS_SIMPLE, 215, 5, 480, 20, gHwnd, NULL, hInst, NULL);
 
 	if (settings.legacyTimer) {
 		CreateWindow(_T("STATIC"), getLangString(settings.lang, IIG_LANGSTR_REFRESHTIMERLBL),  WS_CHILD | WS_VISIBLE | SS_SIMPLE, 5, 28, 125, 20, gHwnd, NULL, hInst, NULL);
@@ -132,6 +133,7 @@ void BuildGUI(HINSTANCE hInst, const SystemSettings& settings)
     optAsMusic = CreateWindow(_T("BUTTON"), getLangString(settings.lang, IIG_LANGSTR_ACTMUSICLBL),  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTORADIOBUTTON, 5, 50, 400, 20, gHwnd, (HMENU)ID_BUTTON_MUSIC, hInst, NULL);
     optAsGame = CreateWindow(_T("BUTTON"), getLangString(settings.lang, IIG_LANGSTR_ACTGAMELBL),  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTORADIOBUTTON, 5, 67, 400, 20, gHwnd, (HMENU)ID_BUTTON_GAME, hInst, NULL);
 
+	//CreateWindow(_T("BUTTON"), getLangString(settings.lang, IIG_LANGSTR_RELOADLBL),  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON, 2, 90, 104, 20, gHwnd, (HMENU)ID_BUTTON_RELOAD, hInst, NULL);
     CreateWindow(_T("BUTTON"), getLangString(settings.lang, IIG_LANGSTR_REFRESHLBL),  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON, 108, 90, 98, 20, gHwnd, (HMENU)ID_BUTTON_REFRESH, hInst, NULL);
     CreateWindow(_T("BUTTON"), getLangString(settings.lang, IIG_LANGSTR_MINITRAYLBL),  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON, 208, 90, 120, 20, gHwnd, (HMENU)ID_BUTTON_MINIMIZE, hInst, NULL);
     CreateWindow(_T("BUTTON"), getLangString(settings.lang, IIG_LANGSTR_EXITLBL),  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON, 330, 90, 60, 20, gHwnd, (HMENU)ID_BUTTON_EXIT, hInst, NULL);

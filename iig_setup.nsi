@@ -5,7 +5,7 @@ Name IMinGame
 
 # General Symbol Definitions
 !define REGKEY "SOFTWARE\$(^Name)"
-!define VERSION 0.1.2
+!define VERSION 0.1.3
 !define COMPANY "Eric Sabouraud"
 !define URL http://sourceforge.net/projects/imingame/
 
@@ -34,6 +34,8 @@ Name IMinGame
 !define MUI_STARTMENUPAGE_REGISTRY_KEY ${REGKEY}
 !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME StartMenuGroup
 !define MUI_STARTMENUPAGE_DEFAULTFOLDER IMinGame
+!define MUI_FINISHPAGE_RUN $INSTDIR\IMinGame.exe
+!define MUI_FINISHPAGE_SHOWREADME $(readmeStr)
 !define MUI_UNICON "${NSISDIR}\Contrib\Graphics\Icons\modern-uninstall-colorful.ico"
 !define MUI_UNFINISHPAGE_NOAUTOCLOSE
 
@@ -63,20 +65,30 @@ Var StartMenuGroup
 #!insertmacro MUI_LANGUAGE German
 
 # Installer Language Strings
-LicenseLangString licenseStr ${LANG_ENGLISH} LICENSE-eng.txt
-LicenseLangString licenseStr ${LANG_FRENCH}  LICENSE-fra.txt
+LicenseLangString licenseStr ${LANG_ENGLISH} "LICENSE-eng.txt"
+LicenseLangString licenseStr ${LANG_FRENCH}  "LICENSE-fra.txt"
 #LicenseLangString licenseStr ${LANG_SPANISH} LICENSE-esp.txt
-#LicenseLangString licenseStr ${LANG_GERMAN} LICENSE-deu.txt
+#LicenseLangString licenseStr ${LANG_GERMAN}  LICENSE-deu.txt
+
+LangString readmeStr ${LANG_ENGLISH} "README-eng.txt"
+LangString readmeStr ${LANG_FRENCH}  "README-fra.txt"
+#LicenseLangString readmeStr ${LANG_SPANISH} README-esp.txt
+#LicenseLangString readmeStr ${LANG_GERMAN}  README-deu.txt
 
 LangString ^UninstallLink ${LANG_ENGLISH} "Uninstall $(^Name)"
-LangString ^UninstallLink ${LANG_FRENCH} "Désinstaller $(^Name)"
+LangString ^UninstallLink ${LANG_FRENCH}  "Désinstaller $(^Name)"
 #LangString ^UninstallLink ${LANG_SPANISH} "Desinstale $(^Name)"
-#LangString ^UninstallLink ${LANG_GERMAN} "Deinstallieren  $(^Name)"
+#LangString ^UninstallLink ${LANG_GERMAN}  "Deinstallieren  $(^Name)"
 
 LangString PresetLang ${LANG_ENGLISH} "0"
-LangString PresetLang ${LANG_FRENCH} "1"
+LangString PresetLang ${LANG_FRENCH}  "1"
 #LangString PresetLang ${LANG_SPANISH} "2"
-#LangString PresetLang ${LANG_GERMAN} "3"
+#LangString PresetLang ${LANG_GERMAN}  "3"
+
+LangString KeepPrefs ${LANG_ENGLISH} "Keep preferences ?"
+LangString KeepPrefs ${LANG_FRENCH}  "Garder la configuration ?"
+#LangString KeepPrefs ${LANG_SPANISH} "Keep preferences ?"
+#LangString KeepPrefs ${LANG_GERMAN}  "Keep preferences ?"
 
 # Installer attributes
 OutFile imingame-${VERSION}-setup.exe
@@ -101,8 +113,9 @@ Section -Main SEC0000
     SetOverwrite on
     File Release\IMinGameHook.dll
     File Release\IMinGame.exe
-    File README.txt
-    File CHANGELOG.txt
+    File README-eng.txt
+    File README-fra.txt
+	File CHANGELOG.txt
     File LICENSE-eng.txt
 	File LICENSE-fra.txt
 	File TODO.txt
@@ -119,10 +132,11 @@ Section -post SEC0001
     CreateDirectory "$SMPROGRAMS\$StartMenuGroup"
     SetOutPath $INSTDIR
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\$(^Name).lnk" $INSTDIR\IMinGame.exe
-	CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Readme.lnk" $INSTDIR\README.txt
+	CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Readme.lnk" $INSTDIR\$(readmeStr)
     SetOutPath $SMPROGRAMS\$StartMenuGroup
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\$(^UninstallLink).lnk" $INSTDIR\uninstall.exe
     !insertmacro MUI_STARTMENU_WRITE_END
+	SetOutPath $INSTDIR
     WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" DisplayName "$(^Name)"
     WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" DisplayVersion "${VERSION}"
     WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" Publisher "${COMPANY}"
@@ -148,7 +162,12 @@ done${UNSECTION_ID}:
 
 # Uninstaller sections
 Section /o -un.Main UNSEC0000
+
+	messageBox MB_YESNO|MB_ICONQUESTION "$(KeepPrefs)" IDYES del_instfiles
 	Delete /REBOOTOK $INSTDIR\settings.dat
+	Delete /REBOOTOK $INSTDIR\wlist.dat
+	Delete /REBOOTOK $INSTDIR\blist.dat
+del_instfiles:	
 	Delete /REBOOTOK $INSTDIR\presettings.dat
     Delete /REBOOTOK $INSTDIR\TODO.txt
 	Delete /REBOOTOK $INSTDIR\LICENSE-fra.txt

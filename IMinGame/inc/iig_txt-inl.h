@@ -42,8 +42,8 @@ IIG_LANGSTR_MACRO(USERMSGDEF,\
 	"Joue à")
 
 IIG_LANGSTR_MACRO(GAMENAMEDEF,\
-	" - Game Title",\
-	" - Titre du jeu")
+	"Game Title",\
+	"Titre du jeu")
 
 IIG_LANGSTR_MACRO(REFRESHTIMERLBL,\
 	"Refresh Interval:",\
@@ -64,6 +64,10 @@ IIG_LANGSTR_MACRO(REFRESHLBL,\
 IIG_LANGSTR_MACRO(MINITRAYLBL,\
 	"Minimize to tray",\
 	"Réduire")
+
+IIG_LANGSTR_MACRO(RELOADLBL,\
+	"Reload settings",
+	"Recharger options")
 
 IIG_LANGSTR_MACRO(EXITLBL,\
 	"Exit",\

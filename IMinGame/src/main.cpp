@@ -60,21 +60,6 @@ static DWORD gGameProcessId = 0;
 static SystemSettings gSystemSettings;
 
 
-//* \brief Do not check these processes for game modules
-static const TCHAR* tabBlackList[] = {
-	_T("<unknown>"),
-	_T("RGSC.EXE"),
-	_T("WMPLAYER.EXE"),
-	_T("ITUNES.EXE"),
-	_T("VLC.EXE"),
-	_T("BSPLAYER.EXE"),
-	_T("IEXPLORE.EXE"),
-	_T("FIREFOX.EXE"),
-	_T("OPERA.EXE"),
-	_T("WINAMP.EXE"),
-	NULL
-};
-
 //* \brief Processes using one of these modules are considered as games
 static const TCHAR* tabModulesList[] = {
 	_T("D3D8.DLL"),
@@ -86,8 +71,6 @@ static const TCHAR* tabModulesList[] = {
 };
 
 
-
-
 /**
 	\brief Callback function to find name of game process window and update IM status
 	\param [in] hwnd : handle of window to check
@@ -97,7 +80,6 @@ static const TCHAR* tabModulesList[] = {
 static BOOL CALLBACK EnumWindowsProc( HWND hwnd, LPARAM lParam )
 {
     TCHAR szWindowName[255] = _T("<unknown>");
-    TCHAR szWindowNameMod[255] = _T(" - ");
     DWORD processID;
 
     GetWindowThreadProcessId(hwnd, &processID);
@@ -109,8 +91,7 @@ static BOOL CALLBACK EnumWindowsProc( HWND hwnd, LPARAM lParam )
     {
         GetWindowText(hwnd, szWindowName, 255);
 		setMsnNowPlaying(gSystemSettings.userMessage, szWindowName, gSystemSettings.asGame, gHwnd);
-		_tcscat(szWindowNameMod, szWindowName);
-		updateWindowText(szWindowNameMod);
+		updateWindowText(szWindowName);
 
 		if (!gSystemSettings.legacyTimer) {
 			KillTimer(gHwnd, 0);
@@ -140,33 +121,49 @@ static bool tryProcess(DWORD processId) {
 			TCHAR szProcessName[1024+64];
 			// Get the process name.
 			GetModuleBaseName( hProcess, hMod[0], szProcessName, sizeof(szProcessName)/sizeof(TCHAR) );
-			bool isBlacklisted = false;
-			for (unsigned int i = 0; tabBlackList[i] != NULL; ++i) {
-				if (_tcscmp(_tcsupr(szProcessName), tabBlackList[i]) == 0) {
-					isBlacklisted = true;
+			
+			bool isWhiteListed = false;
+			for (unsigned int i = 0; i < gSystemSettings.whiteListSize; ++i) {
+				if (_tcsicmp(szProcessName, gSystemSettings.whiteList[i].procname) == 0) {
+					isWhiteListed = true;
+					setMsnNowPlaying(gSystemSettings.userMessage, gSystemSettings.whiteList[i].windowName, gSystemSettings.asGame, gHwnd);
+					updateWindowText(gSystemSettings.whiteList[i].windowName);
+					gGameProcessId = processId;
+					isPlaying = true;
 					break;
 				}
 			}
-			
-			if(!isBlacklisted) {
-				cProcessesModules = cbNeeded / sizeof(HMODULE);
-				for (unsigned int k = 1; k < cProcessesModules; ++k) {
-					GetModuleBaseName( hProcess, hMod[k], szModuleName, sizeof(szModuleName)/sizeof(TCHAR) );
-					bool hasModuleLoaded = false;
-					for (unsigned int i = 0; tabModulesList[i] != NULL; ++i) {
-						if (_tcscmp(_tcsupr(szModuleName), tabModulesList[i]) == 0) {
-							hasModuleLoaded = true;break;
-						}
-					}
-					if(hasModuleLoaded) {
-						if (gSystemSettings.legacyTimer) {
-							EnumWindows(EnumWindowsProc, processId);
-						} else {
-							SetTimer(gHwnd, 0, 5000, NULL);
-						}
-						gGameProcessId = processId;
-						isPlaying = true;
+
+			if (!isWhiteListed) {
+				bool isBlacklisted = false;
+				for (unsigned int i = 0; i < gSystemSettings.blackListSize; ++i) {
+					if (_tcsicmp(szProcessName, gSystemSettings.blackList[i].procname) == 0) {
+						isBlacklisted = true;
 						break;
+					}
+				}
+				
+				if(!isBlacklisted) {
+					bool hasModuleLoaded = false;
+					cProcessesModules = cbNeeded / sizeof(HMODULE);
+					for (unsigned int k = 1; k < cProcessesModules && !hasModuleLoaded; ++k) {
+						GetModuleBaseName( hProcess, hMod[k], szModuleName, sizeof(szModuleName)/sizeof(TCHAR) );
+						for (unsigned int i = 0; tabModulesList[i] != NULL; ++i) {
+							if (_tcsicmp(szModuleName, tabModulesList[i]) == 0) {
+								hasModuleLoaded = true;
+								break;
+							}
+						}
+						if(hasModuleLoaded) {
+							if (gSystemSettings.legacyTimer) {
+								EnumWindows(EnumWindowsProc, processId);
+							} else {
+								SetTimer(gHwnd, 0, 5000, NULL);
+							}
+							gGameProcessId = processId;
+							isPlaying = true;
+							break;
+						}
 					}
 				}
 			}
@@ -294,6 +291,10 @@ LRESULT WINAPI IMinGameProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
     case WM_COMMAND:
         switch(LOWORD(wParam))
         {
+		case ID_BUTTON_RELOAD:
+			LoadSettings(gSystemSettings);
+			PoolProcesses();
+			break;
 		case ID_BUTTON_REFRESH:
 			PoolProcesses();
 			break;

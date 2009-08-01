@@ -43,6 +43,15 @@ typedef struct _SystemSettings
     bool asGame;
 	bool legacyTimer;
 	UINT lang;
+	struct {
+		TCHAR procname[256];
+		TCHAR windowName[256];
+	} whiteList[20];
+	UINT whiteListSize;
+	struct {
+		TCHAR procname[256];
+	} blackList[40];
+	UINT blackListSize;
 } SystemSettings; 
 
 extern void SaveSettings(const SystemSettings& settings);
