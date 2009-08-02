@@ -32,6 +32,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 //IIG_LANGSTR_MACRO(id, eng, fre)
 
+IIG_LANGSTR_MACRO(LANG,\
+	"English",\
+	"French")
 
 IIG_LANGSTR_MACRO(USERMSGLBL,\
 	"Message:",\
@@ -49,16 +52,9 @@ IIG_LANGSTR_MACRO(REFRESHTIMERLBL,\
 	"Refresh Interval:",\
 	"Période de MAJ")
 
-IIG_LANGSTR_MACRO(ACTMUSICLBL,\
-	"Act as music",\
-	"Emulation musique")
-
-IIG_LANGSTR_MACRO(ACTGAMELBL,\
-	"Act as game (don't show in contact list)",\
-	"Emulation jeu (pas dans la liste de contacts)")
 
 IIG_LANGSTR_MACRO(REFRESHLBL,\
-	"Refresh",\
+	"Force update",\
 	"Mettre à jour")
 
 IIG_LANGSTR_MACRO(MINITRAYLBL,\
@@ -66,8 +62,8 @@ IIG_LANGSTR_MACRO(MINITRAYLBL,\
 	"Réduire")
 
 IIG_LANGSTR_MACRO(RELOADLBL,\
-	"Reload settings",
-	"Recharger options")
+	"Settings",
+	"Options")
 
 IIG_LANGSTR_MACRO(EXITLBL,\
 	"Exit",\
@@ -81,7 +77,47 @@ IIG_LANGSTR_MACRO(HELPTXT,\
 	"The application stays active in the system tray.\nYou can now start a game of your choice and it will appear in MSN Messenger.",\
 	"L'application reste active en arrière-plan.\nVous pouvez maintenant lancer un jeu et il apparaîtra dans MSN Messenger.")
 
+IIG_LANGSTR_MACRO(EMUMODELBL,\
+	"MSN notification type",\
+	"Type de notification MSN")
+
+IIG_LANGSTR_MACRO(ACTMUSICLBL,\
+	"Act as music",\
+	"Notification musique")
+
+IIG_LANGSTR_MACRO(ACTGAMELBL,\
+	"Act as game (don't show in contact list)",\
+	"Notification jeu (pas dans la liste de contacts)")
+
+IIG_LANGSTR_MACRO(LANGLBL,\
+	"Language",\
+	"Langue")
+
+IIG_LANGSTR_MACRO(OKLBL,\
+	"OK",\
+	"OK")
+
+IIG_LANGSTR_MACRO(CANCELLBL,\
+	"Cancel",\
+	"Annuler")
+
+IIG_LANGSTR_MACRO(APPLYLBL,\
+	"Apply",\
+	"Appliquer")
+
+IIG_LANGSTR_MACRO(PROCLISTLBL,\
+	"Applications lists",\
+	"Listes d'applications")
+
+IIG_LANGSTR_MACRO(EDITBLISTLBL,\
+	"Edit blacklist",\
+	"Modifier la liste noire")
+
+IIG_LANGSTR_MACRO(EDITWLISTLBL,\
+	"Edit whitelist",\
+	"Modifier la liste blanche")
+
+// Keep in last position !
 IIG_LANGSTR_MACRO(ENDLANGSTR,\
 	"No language string",\
 	"Pas de texte traduit")
-

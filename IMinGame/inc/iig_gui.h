@@ -35,18 +35,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <windows.h>
 #include <tchar.h>
-
+#include "resource.h"
 #include "iig_settings.h"
 
-#define ID_BUTTON_MINIMIZE 102
-#define ID_BUTTON_EXIT 103
-#define ID_EDIT_TITLE 104
-#define ID_EDIT_INTERVAL 105
-#define ID_BUTTON_MUSIC 106
-#define ID_BUTTON_GAME 107
-#define ID_EDIT_STEAM 108
-#define ID_BUTTON_REFRESH 109
-#define ID_BUTTON_RELOAD 110
 
 
 extern HWND txtUserMessage;
@@ -58,6 +49,8 @@ extern HWND lblGame;
 
 extern void updateWindowText(const TCHAR* gameName);
 
+extern void resetWindowLabels(const SystemSettings* settings);
+
 extern void BuildGUI(HINSTANCE hInst, const SystemSettings* settings);
 
 #define IIG_LANGSTR_MACRO( id, eng, fre ) IIG_LANGSTR_##id,
@@ -68,5 +61,5 @@ typedef enum _IIG_LANGSTR_IDX {
 
 extern const _TCHAR* getLangString(UINT lang, UINT idx);
 
-#endif
 
+#endif

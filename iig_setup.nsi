@@ -5,7 +5,7 @@ Name IMinGame
 
 # General Symbol Definitions
 !define REGKEY "SOFTWARE\$(^Name)"
-!define VERSION 0.1.3
+!define VERSION 0.1.4
 !define COMPANY "Eric Sabouraud"
 !define URL http://sourceforge.net/projects/imingame/
 

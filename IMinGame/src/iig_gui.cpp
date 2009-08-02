@@ -36,18 +36,21 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "iig_msg.h"
 #include "iig_settings.h"
 
+HWND lblUserMessage;
 HWND txtUserMessage;
 HWND txtInterval;
 HWND txtSteamProfile;
 HWND optAsMusic;
 HWND optAsGame;
 HWND lblGame;
+HWND lblBtnRefresh;
+HWND lblBtnSettings;
 
 extern HWND gHwnd;
 extern LRESULT WINAPI IMinGameProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam );
 
 #define APP_NAME    _T("IMinGame")
-#define APP_VERSION _T("0.1.3")
+#define APP_VERSION _T("0.1.4")
 
 #define IIG_LANGSTR_MACRO( id, eng, fre ) _T(eng),
 static const TCHAR* engLangStr[] = {
@@ -83,10 +86,16 @@ const _TCHAR* getLangString(UINT lang, UINT idx) {
 }
 
 void updateWindowText(const TCHAR* gameName) {
-	RECT rect;
     SendMessage(lblGame, WM_SETTEXT, 0, (LPARAM)gameName);
-    rect.left = 0; rect.top = 0; rect.right = 400; rect.bottom = 140;
-    InvalidateRect(gHwnd, &rect, TRUE);
+    InvalidateRect(gHwnd, NULL, TRUE);
+}
+
+void resetWindowLabels(const SystemSettings* settings) {
+	SendMessage(lblUserMessage, WM_SETTEXT, 0, (LPARAM)getLangString(settings->lang, IIG_LANGSTR_USERMSGLBL));
+	SendMessage(lblBtnSettings, WM_SETTEXT, 0, (LPARAM)getLangString(settings->lang, IIG_LANGSTR_RELOADLBL));
+	SendMessage(lblBtnRefresh, WM_SETTEXT, 0, (LPARAM)getLangString(settings->lang, IIG_LANGSTR_REFRESHLBL));
+	SendMessage(lblGame, WM_SETTEXT, 0, (LPARAM)getLangString(settings->lang, IIG_LANGSTR_GAMENAMEDEF));
+    InvalidateRect(gHwnd, NULL, TRUE);
 }
 
 void BuildGUI(HINSTANCE hInst, const SystemSettings* settings)
@@ -117,33 +126,33 @@ void BuildGUI(HINSTANCE hInst, const SystemSettings* settings)
 		gHwnd = CreateWindow(APP_NAME, APP_NAME _T(" v") APP_VERSION, WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX, CW_USEDEFAULT, CW_USEDEFAULT, rect.right, rect.bottom, NULL, NULL, hInst, NULL );
 		AdjustWindowRect( &rect, WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX, FALSE);	
 
-		CreateWindow(_T("STATIC"), getLangString(settings->lang, IIG_LANGSTR_USERMSGLBL),  WS_CHILD | WS_VISIBLE | SS_SIMPLE, 5, 5, 70, 20, gHwnd, NULL, hInst, NULL);
-		txtUserMessage = CreateWindowEx(WS_EX_CLIENTEDGE, _T("EDIT"), _T(""),  WS_CHILD | WS_VISIBLE | ES_RIGHT, 75, 3, 120, 20, gHwnd, (HMENU)ID_EDIT_TITLE, hInst, NULL);
-		CreateWindow(_T("STATIC"), _T("  -  "),  WS_CHILD | WS_VISIBLE | SS_SIMPLE, 195, 5, 20, 20, gHwnd, NULL, hInst, NULL);
-		lblGame = CreateWindow(_T("STATIC"), getLangString(settings->lang, IIG_LANGSTR_GAMENAMEDEF),  WS_CHILD | WS_VISIBLE | SS_SIMPLE, 215, 5, 480, 20, gHwnd, NULL, hInst, NULL);
+		lblUserMessage = CreateWindow(_T("STATIC"), getLangString(settings->lang, IIG_LANGSTR_USERMSGLBL),  WS_CHILD | WS_VISIBLE | SS_SIMPLE, 5, 15, 70, 20, gHwnd, NULL, hInst, NULL);
+		txtUserMessage = CreateWindowEx(WS_EX_CLIENTEDGE, _T("EDIT"), _T(""),  WS_CHILD | WS_VISIBLE | ES_RIGHT, 75, 13, 120, 20, gHwnd, (HMENU)ID_EDIT_TITLE, hInst, NULL);
+		CreateWindow(_T("STATIC"), _T("  -  "),  WS_CHILD | WS_VISIBLE | SS_SIMPLE, 195, 15, 20, 20, gHwnd, NULL, hInst, NULL);
+		lblGame = CreateWindow(_T("STATIC"), getLangString(settings->lang, IIG_LANGSTR_GAMENAMEDEF),  WS_CHILD | WS_VISIBLE | SS_SIMPLE, 215, 15, 480, 20, gHwnd, NULL, hInst, NULL);
 
-		if (settings->legacyTimer) {
-			CreateWindow(_T("STATIC"), getLangString(settings->lang, IIG_LANGSTR_REFRESHTIMERLBL),  WS_CHILD | WS_VISIBLE | SS_SIMPLE, 5, 28, 125, 20, gHwnd, NULL, hInst, NULL);
-			txtInterval = CreateWindowEx(WS_EX_CLIENTEDGE, _T("EDIT"), _T(""),  WS_CHILD | WS_VISIBLE | ES_NUMBER, 120, 26, 23, 20, gHwnd, (HMENU)ID_EDIT_INTERVAL, hInst, NULL);
-			CreateWindow(_T("STATIC"), _T("s"),  WS_CHILD | WS_VISIBLE | SS_SIMPLE, 150, 28, 30, 20, gHwnd, NULL, hInst, NULL);
-		}
+		//if (settings->legacyTimer) {
+		//	CreateWindow(_T("STATIC"), getLangString(settings->lang, IIG_LANGSTR_REFRESHTIMERLBL),  WS_CHILD | WS_VISIBLE | SS_SIMPLE, 5, 28, 125, 20, gHwnd, NULL, hInst, NULL);
+		//	txtInterval = CreateWindowEx(WS_EX_CLIENTEDGE, _T("EDIT"), _T(""),  WS_CHILD | WS_VISIBLE | ES_NUMBER, 120, 26, 23, 20, gHwnd, (HMENU)ID_EDIT_INTERVAL, hInst, NULL);
+		//	CreateWindow(_T("STATIC"), _T("s"),  WS_CHILD | WS_VISIBLE | SS_SIMPLE, 150, 28, 30, 20, gHwnd, NULL, hInst, NULL);
+		//}
 
 		//CreateWindow(_T("STATIC"), _T("Steam Profile:"),  WS_CHILD | WS_VISIBLE | SS_SIMPLE, 200, 28, 125, 20, gHwnd, NULL, hInst, NULL);
 		//txtSteamProfile = CreateWindowEx(WS_EX_CLIENTEDGE, _T("EDIT"), _T(""),  WS_CHILD | WS_VISIBLE | ES_NUMBER, 300, 26, 80, 20, gHwnd, (HMENU)ID_EDIT_STEAM, hInst, NULL);
 
-		optAsMusic = CreateWindow(_T("BUTTON"), getLangString(settings->lang, IIG_LANGSTR_ACTMUSICLBL),  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTORADIOBUTTON, 5, 50, 400, 20, gHwnd, (HMENU)ID_BUTTON_MUSIC, hInst, NULL);
-		optAsGame = CreateWindow(_T("BUTTON"), getLangString(settings->lang, IIG_LANGSTR_ACTGAMELBL),  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTORADIOBUTTON, 5, 67, 400, 20, gHwnd, (HMENU)ID_BUTTON_GAME, hInst, NULL);
+		//optAsMusic = CreateWindow(_T("BUTTON"), getLangString(settings->lang, IIG_LANGSTR_ACTMUSICLBL),  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTORADIOBUTTON, 5, 50, 400, 20, gHwnd, (HMENU)ID_BUTTON_MUSIC, hInst, NULL);
+		//optAsGame = CreateWindow(_T("BUTTON"), getLangString(settings->lang, IIG_LANGSTR_ACTGAMELBL),  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTORADIOBUTTON, 5, 67, 400, 20, gHwnd, (HMENU)ID_BUTTON_GAME, hInst, NULL);
 
-		//CreateWindow(_T("BUTTON"), getLangString(settings->lang, IIG_LANGSTR_RELOADLBL),  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON, 2, 90, 104, 20, gHwnd, (HMENU)ID_BUTTON_RELOAD, hInst, NULL);
-		CreateWindow(_T("BUTTON"), getLangString(settings->lang, IIG_LANGSTR_REFRESHLBL),  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON, 108, 90, 98, 20, gHwnd, (HMENU)ID_BUTTON_REFRESH, hInst, NULL);
-		CreateWindow(_T("BUTTON"), getLangString(settings->lang, IIG_LANGSTR_MINITRAYLBL),  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON, 208, 90, 120, 20, gHwnd, (HMENU)ID_BUTTON_MINIMIZE, hInst, NULL);
-		CreateWindow(_T("BUTTON"), getLangString(settings->lang, IIG_LANGSTR_EXITLBL),  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON, 330, 90, 60, 20, gHwnd, (HMENU)ID_BUTTON_EXIT, hInst, NULL);
+		lblBtnSettings = CreateWindow(_T("BUTTON"), getLangString(settings->lang, IIG_LANGSTR_RELOADLBL),  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON, 170, 90, 104, 20, gHwnd, (HMENU)ID_BUTTON_SETTINGS, hInst, NULL);
+		lblBtnRefresh = CreateWindow(_T("BUTTON"), getLangString(settings->lang, IIG_LANGSTR_REFRESHLBL),  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON, 280, 90, 98, 20, gHwnd, (HMENU)ID_BUTTON_REFRESH, hInst, NULL);
+		//CreateWindow(_T("BUTTON"), getLangString(settings->lang, IIG_LANGSTR_MINITRAYLBL),  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON, 208, 90, 120, 20, gHwnd, (HMENU)ID_BUTTON_MINIMIZE, hInst, NULL);
+		//CreateWindow(_T("BUTTON"), getLangString(settings->lang, IIG_LANGSTR_EXITLBL),  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON, 330, 90, 60, 20, gHwnd, (HMENU)ID_BUTTON_EXIT, hInst, NULL);
 	}
 	
 	{
 		// Icon
 		NOTIFYICONDATA tnd;
-		TCHAR strInterval[10];
+//		TCHAR strInterval[10];
 
 		tnd.cbSize = sizeof(NOTIFYICONDATA);
 		tnd.hWnd = gHwnd;
@@ -155,13 +164,14 @@ void BuildGUI(HINSTANCE hInst, const SystemSettings* settings)
 		Shell_NotifyIcon(NIM_ADD,&tnd);
 
 		// Settings
-		wsprintf(strInterval, _T("%u"), settings->interval);
-		SendMessage(txtUserMessage, WM_SETTEXT, 0, (LPARAM)settings->userMessage);
-		SendMessage(txtInterval, WM_SETTEXT, 0, (LPARAM)strInterval);
-		if(settings->asGame)
-			SendMessage(optAsGame,BM_SETCHECK,BST_CHECKED,0);
-		else
-			SendMessage(optAsMusic,BM_SETCHECK,BST_CHECKED,0);
+		//wsprintf(strInterval, _T("%u"), settings->interval);
+		SetDlgItemText(gHwnd, ID_EDIT_TITLE, settings->userMessage);
+		//SendMessage(txtUserMessage, WM_SETTEXT, 0, (LPARAM)settings->userMessage);
+		//SendMessage(txtInterval, WM_SETTEXT, 0, (LPARAM)strInterval);
+		//if(settings->asGame)
+		//	SendMessage(optAsGame,BM_SETCHECK,BST_CHECKED,0);
+		//else
+		//	SendMessage(optAsMusic,BM_SETCHECK,BST_CHECKED,0);
 	}
 
 }

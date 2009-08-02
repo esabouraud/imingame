@@ -88,7 +88,7 @@ void SaveSettings(const SystemSettings* settings)
 {
 	FILE *file = NULL;
 	UINT i = 0;
-	if ((file = _tfopen(_T("settings->dat"), _T("w"))) != NULL) {
+	if ((file = _tfopen(_T("settings.dat"), _T("w"))) != NULL) {
 		_ftprintf(file, _T("[general]\nuserMessage=%s\ninterval=%u\nasGame=%d\nlegacyTimer=%d\nlang=%u\n"),
 			settings->userMessage, settings->interval, settings->asGame, settings->legacyTimer, settings->lang);
 		fclose(file);
@@ -116,7 +116,7 @@ void LoadSettings(SystemSettings* settings)
 	UINT lang = 0;
 
 	// Read settings file if present
-	if ((file = _tfopen(_T("settings->dat"), _T("r"))) != NULL) {
+	if ((file = _tfopen(_T("settings.dat"), _T("r"))) != NULL) {
 		// This part could be replaced with GetPrivateProfileSection/GetPrivateProfileString
 		loadSuccess = _ftscanf(file, _T("[general]\nuserMessage=%62[^\n]\ninterval=%u\nasGame=%d\nlegacyTimer=%d\nlang=%u\n"),
 			&settings->userMessage, &settings->interval, &settings->asGame, &settings->legacyTimer, &settings->lang) == 5;

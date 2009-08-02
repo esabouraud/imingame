@@ -52,6 +52,7 @@ typedef void (*HookUninstaller)();
 
 HWND gHwnd = NULL;
 
+HBITMAP g_hbmBall = NULL;
 
 static BOOL gHidden = TRUE;
 
@@ -209,27 +210,116 @@ static void PoolProcesses()
     gGameProcessId = newGameProcessId;
 }
 
+/**
+	\brief Set captions for all elements of settings dialog
+	\param [in] : settings dialog handle
+*/
+void initSettingsDialogText(HWND hwnd) {
+	SetDlgItemText(hwnd, ID_GROUP_EMUMODE, getLangString(gSystemSettings.lang, IIG_LANGSTR_EMUMODELBL));
+	SetDlgItemText(hwnd, ID_RADIO_EMUMUSIC, getLangString(gSystemSettings.lang, IIG_LANGSTR_ACTMUSICLBL));
+	SetDlgItemText(hwnd, ID_RADIO_EMUGAME, getLangString(gSystemSettings.lang, IIG_LANGSTR_ACTGAMELBL));
+	SetDlgItemText(hwnd, ID_COMBO_LANGUAGE, getLangString(gSystemSettings.lang, IIG_LANGSTR_LANGLBL));
+	SetDlgItemText(hwnd, ID_BUTTON_OK, getLangString(gSystemSettings.lang, IIG_LANGSTR_OKLBL));
+	SetDlgItemText(hwnd, ID_BUTTON_CANCEL, getLangString(gSystemSettings.lang, IIG_LANGSTR_CANCELLBL));
+	SetDlgItemText(hwnd, ID_BUTTON_APPLY, getLangString(gSystemSettings.lang, IIG_LANGSTR_APPLYLBL));
+	SetDlgItemText(hwnd, ID_GROUP_LISTS, getLangString(gSystemSettings.lang, IIG_LANGSTR_PROCLISTLBL));
+	SetDlgItemText(hwnd, ID_BUTTON_BLIST, getLangString(gSystemSettings.lang, IIG_LANGSTR_EDITBLISTLBL));
+	SetDlgItemText(hwnd, ID_BUTTON_WLIST, getLangString(gSystemSettings.lang, IIG_LANGSTR_EDITWLISTLBL));
+}
 
+/**
+	\brief Settings dialog message processing
+*/
+BOOL CALLBACK SettingsDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam)
+{
+	switch(Message) {
+		case WM_INITDIALOG: {
+			HWND hwndCombo = NULL;
+			initSettingsDialogText(hwnd);
+			hwndCombo = GetDlgItem(hwnd, IDC_COMBO_LANGUAGE);
+			SendMessage(hwndCombo, CB_ADDSTRING, 0, (LPARAM)getLangString(0, IIG_LANGSTR_LANG));
+			SendMessage(hwndCombo, CB_ADDSTRING, 0, (LPARAM)getLangString(1, IIG_LANGSTR_LANG)); 
+			SendMessage(hwndCombo, CB_SETCURSEL, gSystemSettings.lang, 0);
+			SendDlgItemMessage(hwnd, gSystemSettings.asGame ? ID_RADIO_EMUGAME : ID_RADIO_EMUMUSIC, BM_SETCHECK, BST_CHECKED, 0);
+			return TRUE;
+		}
+		
+		case WM_COMMAND:
+			switch(LOWORD(wParam)) {
+				case ID_BUTTON_CANCEL:
+					EndDialog(hwnd, IDCANCEL);
+					break;
+				case ID_BUTTON_OK:
+				case ID_BUTTON_APPLY:
+					// Reload whitelist and black list
+					//LoadSettings(&gSystemSettings);
+
+					gSystemSettings.asGame = (BST_CHECKED == SendDlgItemMessage(hwnd, ID_RADIO_EMUGAME, BM_GETCHECK, 0, 0));
+					gSystemSettings.lang = SendDlgItemMessage(hwnd, IDC_COMBO_LANGUAGE, CB_GETCURSEL, 0, 0);
+					
+					initSettingsDialogText(hwnd);
+					resetWindowLabels(&gSystemSettings);
+
+					SaveSettings(&gSystemSettings);
+					if (LOWORD(wParam) == ID_BUTTON_OK) {
+						EndDialog(hwnd, IDOK);
+					}
+					break;
+			}
+			break;
+		case WM_CLOSE:
+			EndDialog(hwnd, IDCANCEL);
+			break;
+		default:
+			return FALSE;
+	}
+
+	return TRUE;
+}
 
 /**
 	\brief Main message processing dispatch function
 */
 LRESULT WINAPI IMinGameProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 {
-    PAINTSTRUCT ps;
-    HDC hdc;
+	HDC hdc;
 
-    switch (msg) 
-    {
-    case WM_PAINT:
-        hdc = BeginPaint(hWnd, &ps);
-        EndPaint(hWnd, &ps);
-        break;
+    switch (msg) {
+	case WM_CREATE:
+		g_hbmBall = LoadBitmap(GetModuleHandle(NULL), MAKEINTRESOURCE(IDB_LOGO));
+		if(g_hbmBall == NULL)
+			MessageBox(hWnd, _T("Could not load IDB_LOGO!"), _T("Error"), MB_OK | MB_ICONEXCLAMATION);
+		break;
+	case WM_PAINT:
+		{
+			BITMAP bm;
+			PAINTSTRUCT ps;
+
+			hdc = BeginPaint(hWnd, &ps);
+
+			HDC hdcMem = CreateCompatibleDC(hdc);
+			HBITMAP hbmOld = (HBITMAP)SelectObject(hdcMem, g_hbmBall);
+
+			GetObject(g_hbmBall, sizeof(bm), &bm);
+
+			BitBlt(hdc, 0, 0, bm.bmWidth, bm.bmHeight, hdcMem, 0, 0, SRCCOPY);
+
+			SelectObject(hdcMem, hbmOld);
+			DeleteDC(hdcMem);
+
+			EndPaint(hWnd, &ps);
+			break;
+		}
     case WM_CLOSE:
-        if(MessageBox(gHwnd, getLangString(gSystemSettings.lang, IIG_LANGSTR_EXITMBOX), getLangString(gSystemSettings.lang, IIG_LANGSTR_EXITLBL), MB_YESNO | MB_ICONQUESTION) == IDYES)
-            PostQuitMessage(0);
+		if(MessageBox(gHwnd, getLangString(gSystemSettings.lang, IIG_LANGSTR_EXITMBOX), getLangString(gSystemSettings.lang, IIG_LANGSTR_EXITLBL), MB_YESNO | MB_ICONQUESTION) == IDYES) {
+            //PostQuitMessage(0);
+			DestroyWindow(hWnd);
+		}
         break;
-
+	case WM_DESTROY:
+			DeleteObject(g_hbmBall);
+			PostQuitMessage(0);
+		break;
     case WM_CTLCOLORSTATIC:
         {
             if((HWND)lParam != txtUserMessage && (HWND)lParam != txtInterval)
@@ -281,20 +371,27 @@ LRESULT WINAPI IMinGameProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
     case WM_COMMAND:
         switch(LOWORD(wParam))
         {
-		case ID_BUTTON_RELOAD:
-			LoadSettings(&gSystemSettings);
-			PoolProcesses();
+		case ID_BUTTON_SETTINGS:
+			//LoadSettings(&gSystemSettings);
+			//PoolProcesses();
+			{
+				int ret = DialogBox(GetModuleHandle(NULL), 
+				MAKEINTRESOURCE(IDD_OPTIONS), hWnd, SettingsDlgProc);
+				if(ret == IDOK){
+					PoolProcesses();
+				}
+			}
 			break;
 		case ID_BUTTON_REFRESH:
 			PoolProcesses();
 			break;
-        case ID_BUTTON_MINIMIZE:
-            gHidden = TRUE;
-            ShowWindow( gHwnd, SW_HIDE );
-            break;
-        case ID_BUTTON_EXIT:
-            if(MessageBox(gHwnd, getLangString(gSystemSettings.lang, IIG_LANGSTR_EXITMBOX), getLangString(gSystemSettings.lang, IIG_LANGSTR_EXITLBL), MB_YESNO | MB_ICONQUESTION) == IDYES)
-                PostQuitMessage(0);
+        //case ID_BUTTON_MINIMIZE:
+        //    gHidden = TRUE;
+        //    ShowWindow( gHwnd, SW_HIDE );
+        //    break;
+        //case ID_BUTTON_EXIT:
+        //    if(MessageBox(gHwnd, getLangString(gSystemSettings.lang, IIG_LANGSTR_EXITMBOX), getLangString(gSystemSettings.lang, IIG_LANGSTR_EXITLBL), MB_YESNO | MB_ICONQUESTION) == IDYES)
+        //        PostQuitMessage(0);
             break;
         case ID_EDIT_TITLE:
             switch(HIWORD(wParam))
@@ -304,37 +401,37 @@ LRESULT WINAPI IMinGameProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
                     TCHAR text[63];
                     GetWindowText((HWND)lParam, text, 63);
                     _tcscpy(gSystemSettings.userMessage, text);
-                    SaveSettings(&gSystemSettings);
+                    //SaveSettings(&gSystemSettings);
                 }
             }
             break;
-        case ID_EDIT_INTERVAL:
-            switch(HIWORD(wParam))
-            {
-            case EN_CHANGE:
-                {
-                    TCHAR text[10];
-                    GetWindowText((HWND)lParam, text, 10);
-                    gSystemSettings.interval = _ttoi(text);
-                    SaveSettings(&gSystemSettings);
-					if (gSystemSettings.legacyTimer) {
-						SetTimer( gHwnd, 0, gSystemSettings.interval * 1000, (TIMERPROC)NULL );
-					}
-                }
-            }
-            break;
-        case ID_BUTTON_MUSIC:
-            SendMessage(optAsMusic,BM_SETCHECK,BST_CHECKED,0);
-            SendMessage(optAsGame,BM_SETCHECK,BST_UNCHECKED,0);
-            gSystemSettings.asGame = FALSE;
-            SaveSettings(&gSystemSettings);
-            break;
-        case ID_BUTTON_GAME:
-            SendMessage(optAsMusic,BM_SETCHECK,BST_UNCHECKED,0);
-            SendMessage(optAsGame,BM_SETCHECK,BST_CHECKED,0);
-            gSystemSettings.asGame = TRUE;
-            SaveSettings(&gSystemSettings);
-            break;
+     //   case ID_EDIT_INTERVAL:
+     //       switch(HIWORD(wParam))
+     //       {
+     //       case EN_CHANGE:
+     //           {
+     //               TCHAR text[10];
+     //               GetWindowText((HWND)lParam, text, 10);
+     //               gSystemSettings.interval = _ttoi(text);
+     //               //SaveSettings(&gSystemSettings);
+					//if (gSystemSettings.legacyTimer) {
+					//	SetTimer( gHwnd, 0, gSystemSettings.interval * 1000, (TIMERPROC)NULL );
+					//}
+     //           }
+     //       }
+     //       break;
+        //case ID_BUTTON_MUSIC:
+        //    SendMessage(optAsMusic,BM_SETCHECK,BST_CHECKED,0);
+        //    SendMessage(optAsGame,BM_SETCHECK,BST_UNCHECKED,0);
+        //    gSystemSettings.asGame = FALSE;
+        //    SaveSettings(&gSystemSettings);
+        //    break;
+        //case ID_BUTTON_GAME:
+        //    SendMessage(optAsMusic,BM_SETCHECK,BST_UNCHECKED,0);
+        //    SendMessage(optAsGame,BM_SETCHECK,BST_CHECKED,0);
+        //    gSystemSettings.asGame = TRUE;
+        //    SaveSettings(&gSystemSettings);
+        //    break;
         }
         return 0;
 
@@ -396,7 +493,7 @@ int APIENTRY _tWinMain(
 		HINSTANCE hinst = LoadLibrary(_T("IMinGameHook.dll")); 
 		if (hinst == NULL) 
 		{
-			_tprintf(_T("null hinst"));
+			MessageBox(gHwnd, _T("IMinGameHook.dll load failed !"), _T("Error"), MB_OK | MB_ICONEXCLAMATION);
 			return -1;
 		} 
 
