@@ -5,7 +5,7 @@ Name IMinGame
 
 # General Symbol Definitions
 !define REGKEY "SOFTWARE\$(^Name)"
-!define VERSION 0.2.0
+!define VERSION 0.2.1
 !define COMPANY "Eric Sabouraud"
 !define URL http://sourceforge.net/projects/imingame/
 
@@ -90,6 +90,9 @@ LangString KeepPrefs ${LANG_FRENCH}  "Garder la configuration ?"
 #LangString KeepPrefs ${LANG_SPANISH} "Keep preferences ?"
 #LangString KeepPrefs ${LANG_GERMAN}  "Keep preferences ?"
 
+LangString NoRuntime ${LANG_ENGLISH} "Download and install Microsoft Visual C++ 2008 SP1 Redistributable Package (x86) (needed for IMinGame) ?"
+LangString NoRuntime ${LANG_FRENCH} "Télécharger et installer Microsoft Visual C++ 2008 SP1 Redistributable Package (x86) (nécessaire pour IMinGame) ?"
+
 # Installer attributes
 OutFile imingame-${VERSION}-setup.exe
 InstallDir IMinGame
@@ -145,6 +148,7 @@ Section -post SEC0001
     WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" UninstallString $INSTDIR\uninstall.exe
     WriteRegDWORD HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" NoModify 1
     WriteRegDWORD HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" NoRepair 1
+	Call CheckVisualRuntime
 SectionEnd
 
 # Macro for selecting uninstaller sections
@@ -163,7 +167,7 @@ done${UNSECTION_ID}:
 # Uninstaller sections
 Section /o -un.Main UNSEC0000
 
-	messageBox MB_YESNO|MB_ICONQUESTION "$(KeepPrefs)" IDYES del_instfiles
+	MessageBox MB_YESNO|MB_ICONQUESTION "$(KeepPrefs)" IDYES del_instfiles
 	Delete /REBOOTOK $INSTDIR\settings.ini
 	Delete /REBOOTOK $INSTDIR\wlist.txt
 	Delete /REBOOTOK $INSTDIR\blist.txt
@@ -204,6 +208,21 @@ Function .onInit
     !insertmacro MUI_LANGDLL_DISPLAY
     !insertmacro MULTIUSER_INIT
 FunctionEnd
+
+
+Function CheckVisualRuntime
+	Push $R0
+	Push $R1
+	FindFirst $R1 $R0 "$WINDIR\WinSxS\x86_Microsoft.VC90.CRT_1fc8b3b9a1e18e3b_9.0.30729.1*"
+	IfErrors 0 runtime_present
+		MessageBox MB_YESNO|MB_ICONQUESTION  "$(NoRuntime)" IDNO runtime_present
+		ExecShell Open "http://download.microsoft.com/download/d/d/9/dd9a82d0-52ef-40db-8dab-795376989c03/vcredist_x86.exe" SW_SHOWNORMAL
+runtime_present:
+	FindClose $R1
+	Pop $R1
+	Pop $R0
+FunctionEnd
+
 
 # Uninstaller functions
 Function un.onInit
