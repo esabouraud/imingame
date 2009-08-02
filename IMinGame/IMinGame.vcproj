@@ -179,6 +179,14 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\src\iig_detect.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\iig_dialog.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\iig_gui.cpp"
 				>
 			</File>
@@ -200,6 +208,10 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath=".\inc\iig_detect.h"
+				>
+			</File>
 			<File
 				RelativePath=".\inc\iig_gui.h"
 				>

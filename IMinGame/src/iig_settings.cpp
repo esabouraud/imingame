@@ -50,6 +50,12 @@ static const TCHAR* defaultBlackList[] = {
 	_T("MPLAYERC.EXE"),
 };
 
+//* \brief Do not check these processes for game modules
+static const TCHAR* defaultWhiteList[][2] = {
+	{ _T("chuzzle.exe"), _T("Chuzzle") },
+	{ _T("WinBej.exe"), _T("Bejeweled") },
+};
+
 static int bwListCompare(const void* proc1, const void* proc2) {
 	return _tcsicmp(((struct bwListElt*)proc1)->procname, ((struct bwListElt*)proc2)->procname);
 }
@@ -88,20 +94,20 @@ void SaveSettings(const SystemSettings* settings)
 {
 	FILE *file = NULL;
 	UINT i = 0;
-	if ((file = _tfopen(_T("settings.dat"), _T("w"))) != NULL) {
+	if ((file = _tfopen(_T("settings.ini"), _T("w"))) != NULL) {
 		_ftprintf(file, _T("[general]\nuserMessage=%s\ninterval=%u\nasGame=%d\nlegacyTimer=%d\nlang=%u\n"),
 			settings->userMessage, settings->interval, settings->asGame, settings->legacyTimer, settings->lang);
 		fclose(file);
     }
 
-	if ((file = _tfopen(_T("wlist.dat"), _T("w"))) != NULL) {
+	if ((file = _tfopen(_T("wlist.txt"), _T("w"))) != NULL) {
 		for (i = 0; i < settings->whiteListSize; ++i) {
 			_ftprintf(file, _T("%s|%s\n"), settings->whiteList[i].procname, settings->whiteList[i].windowName);
 		}
 		fclose(file);
 	}
 
-	if ((file = _tfopen(_T("blist.dat"), _T("w"))) != NULL) {
+	if ((file = _tfopen(_T("blist.txt"), _T("w"))) != NULL) {
 		for (i = 0; i < settings->blackListSize; ++i) {
 			_ftprintf(file, _T("%s\n"), settings->blackList[i].procname);
 		}
@@ -116,7 +122,7 @@ void LoadSettings(SystemSettings* settings)
 	UINT lang = 0;
 
 	// Read settings file if present
-	if ((file = _tfopen(_T("settings.dat"), _T("r"))) != NULL) {
+	if ((file = _tfopen(_T("settings.ini"), _T("r"))) != NULL) {
 		// This part could be replaced with GetPrivateProfileSection/GetPrivateProfileString
 		loadSuccess = _ftscanf(file, _T("[general]\nuserMessage=%62[^\n]\ninterval=%u\nasGame=%d\nlegacyTimer=%d\nlang=%u\n"),
 			&settings->userMessage, &settings->interval, &settings->asGame, &settings->legacyTimer, &settings->lang) == 5;
@@ -124,7 +130,7 @@ void LoadSettings(SystemSettings* settings)
 	} 
 
 	// Fallback on pre-settings file (created by installer) if settings file is missing or corrupted
-	if (!loadSuccess && (file = _tfopen(_T("presettings.dat"), _T("r"))) != NULL) {
+	if (!loadSuccess && (file = _tfopen(_T("presettings.ini"), _T("r"))) != NULL) {
 		_ftscanf(file, _T("[general]\nlang=%u\n"), &lang);
 		fclose(file);
 	}
@@ -138,9 +144,9 @@ void LoadSettings(SystemSettings* settings)
 		_tcscpy(settings->userMessage, getLangString(settings->lang, IIG_LANGSTR_USERMSGDEF));
      }
 
-	// Read whitelist
+	// Read whitelist, restore default if missing
 	settings->whiteListSize = 0;
-	if ((file = _tfopen(_T("wlist.dat"), _T("r"))) != NULL) {
+	if ((file = _tfopen(_T("wlist.txt"), _T("r"))) != NULL) {
 		while (settings->whiteListSize < sizeof(settings->whiteList)/sizeof(*settings->whiteList)) {
 			if (_ftscanf(file, _T("%255[^|]|%255[^\n]\n"), settings->whiteList[settings->whiteListSize].procname, settings->whiteList[settings->whiteListSize].windowName) == 2) {
 				++settings->whiteListSize;
@@ -148,13 +154,20 @@ void LoadSettings(SystemSettings* settings)
 				break;
 			}
 		}
-		fclose(file);
-		qsort(settings->whiteList, settings->whiteListSize, sizeof(*settings->whiteList), bwListCompare);
+		fclose(file);	
+	} else {
+		while (settings->whiteListSize < sizeof(defaultWhiteList)/sizeof(*defaultWhiteList)
+			&& settings->whiteListSize < sizeof(settings->whiteList)/sizeof(*settings->whiteList)) {
+			_tcsncpy(settings->whiteList[settings->whiteListSize].procname, defaultWhiteList[settings->whiteListSize][0], 255);
+			_tcsncpy(settings->whiteList[settings->whiteListSize].windowName, defaultWhiteList[settings->whiteListSize][1], 255);
+			++settings->whiteListSize;
+		}
 	}
+	qsort(settings->whiteList, settings->whiteListSize, sizeof(*settings->whiteList), bwListCompare);
 
 	// Read blacklist, restore default if missing
 	settings->blackListSize = 0;
-	if ((file = _tfopen(_T("blist.dat"), _T("r"))) != NULL) {
+	if ((file = _tfopen(_T("blist.txt"), _T("r"))) != NULL) {
 		while (settings->blackListSize < sizeof(settings->blackList)/sizeof(*settings->blackList)) {
 			if (_ftscanf(file, _T("%255[^\n]\n"), settings->blackList[settings->blackListSize].procname) == 1) {
 				++settings->blackListSize;

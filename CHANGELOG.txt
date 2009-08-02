@@ -1,7 +1,8 @@
 2009-08-01 version 0.2.0:
 	* Fixed settings file regression of 0.1.3
 	* Main window decluttering and background image
-	* Settings dialog
+	* Settings dialog (with immediate language change)
+	* Launch text editor from settings dialog to edit black/white lists
 
 2009-08-01 version 0.1.3:
 	* Implemented plain text process white list and black list

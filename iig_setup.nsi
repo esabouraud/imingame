@@ -5,7 +5,7 @@ Name IMinGame
 
 # General Symbol Definitions
 !define REGKEY "SOFTWARE\$(^Name)"
-!define VERSION 0.1.4
+!define VERSION 0.2.0
 !define COMPANY "Eric Sabouraud"
 !define URL http://sourceforge.net/projects/imingame/
 
@@ -120,7 +120,7 @@ Section -Main SEC0000
 	File LICENSE-fra.txt
 	File TODO.txt
     WriteRegStr HKLM "${REGKEY}\Components" Main 1
-	WriteINIStr $INSTDIR\presettings.dat "general" lang $(PresetLang)
+	WriteINIStr $INSTDIR\presettings.ini "general" lang $(PresetLang)
 
 SectionEnd
 
@@ -164,11 +164,11 @@ done${UNSECTION_ID}:
 Section /o -un.Main UNSEC0000
 
 	messageBox MB_YESNO|MB_ICONQUESTION "$(KeepPrefs)" IDYES del_instfiles
-	Delete /REBOOTOK $INSTDIR\settings.dat
-	Delete /REBOOTOK $INSTDIR\wlist.dat
-	Delete /REBOOTOK $INSTDIR\blist.dat
+	Delete /REBOOTOK $INSTDIR\settings.ini
+	Delete /REBOOTOK $INSTDIR\wlist.txt
+	Delete /REBOOTOK $INSTDIR\blist.txt
 del_instfiles:	
-	Delete /REBOOTOK $INSTDIR\presettings.dat
+	Delete /REBOOTOK $INSTDIR\presettings.ini
     Delete /REBOOTOK $INSTDIR\TODO.txt
 	Delete /REBOOTOK $INSTDIR\LICENSE-fra.txt
     Delete /REBOOTOK $INSTDIR\LICENSE-eng.txt
