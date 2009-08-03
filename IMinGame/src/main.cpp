@@ -74,6 +74,7 @@ int APIENTRY _tWinMain(
         return 0;
 
 	LoadSettings(&gSystemSettings);
+	SaveSettings(&gSystemSettings);
 	BuildGUI(hInst, &gSystemSettings);
     ShowWindow(gHwnd, SW_SHOWDEFAULT );
 

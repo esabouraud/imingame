@@ -177,7 +177,8 @@ del_instfiles:
 	Delete /REBOOTOK $INSTDIR\LICENSE-fra.txt
     Delete /REBOOTOK $INSTDIR\LICENSE-eng.txt
     Delete /REBOOTOK $INSTDIR\CHANGELOG.txt
-    Delete /REBOOTOK $INSTDIR\README.txt
+    Delete /REBOOTOK $INSTDIR\README-fra.txt
+	Delete /REBOOTOK $INSTDIR\README-eng.txt
     Delete /REBOOTOK $INSTDIR\IMinGame.exe
     Delete /REBOOTOK $INSTDIR\IMinGameHook.dll
     DeleteRegValue HKLM "${REGKEY}\Components" Main

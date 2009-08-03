@@ -1,4 +1,6 @@
-2009-08-01 version 0.2.1:
+2009-08-03 version 0.2.1:
+	* Fixed black/white list not editable when program is first run
+	* Fixed README not being uninstalled
 	* Added detection and optional download of VC++2008 runtime to installer
 
 2009-08-01 version 0.2.0:
