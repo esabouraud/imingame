@@ -30,7 +30,13 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#ifndef _IIG_DETECT_H_
+#define _IIG_DETECT_H_
+
 extern BOOL TryProcess(DWORD processId);
 extern void PoolProcesses(void);
 extern void ClearMessage();
 extern BOOL CALLBACK EnumWindowsProc( HWND hwnd, LPARAM lParam );
+extern BOOL GetProcessName(TCHAR* procname, size_t procnamesize, DWORD processId);
+
+#endif

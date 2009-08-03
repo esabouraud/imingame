@@ -72,4 +72,6 @@ extern int bwListSearch(const TCHAR* procname, const struct bwListElt list[], in
 
 extern BOOL isInBWList(const TCHAR* procname, const struct bwListElt list[], UINT num);
 
+extern void AddToBlackList(SystemSettings* settings, TCHAR* procname);
+
 #endif

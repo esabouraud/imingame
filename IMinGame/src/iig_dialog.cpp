@@ -170,7 +170,7 @@ LRESULT WINAPI IMinGameProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 		break;
     case WM_CTLCOLORSTATIC:
         {
-            if((HWND)lParam != txtUserMessage && (HWND)lParam != txtInterval)
+            if((HWND)lParam != txtUserMessage /*&& (HWND)lParam != txtInterval*/)
             {
                 hdc = (HDC)wParam;
                 SetBkMode(hdc, TRANSPARENT);
@@ -243,6 +243,17 @@ LRESULT WINAPI IMinGameProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 						GetWindowText((HWND)lParam, text, 63);
 						_tcscpy(gSystemSettings.userMessage, text);
 						//SaveSettings(&gSystemSettings);
+					}
+				}
+				break;
+			case ID_BUTTON_BLACKLIST:
+				{
+					if (gGameProcessId) {
+						TCHAR procname[255];
+						if (GetProcessName(procname, sizeof(procname), gGameProcessId)) {
+							AddToBlackList(&gSystemSettings, procname);
+							PoolProcesses();
+						}
 					}
 				}
 				break;

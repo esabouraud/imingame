@@ -90,6 +90,14 @@ BOOL isInBWList(const TCHAR* procname, const struct bwListElt list[], UINT num) 
 }
 
 
+void AddToBlackList(SystemSettings* settings, TCHAR* procname) {
+	if (settings->blackListSize < sizeof(settings->blackList)/sizeof(*settings->blackList)) {
+		_tcscpy(settings->blackList[settings->blackListSize].procname, procname);
+		++settings->blackListSize;
+		SaveSettings(settings);
+	}
+}
+
 void SaveSettings(const SystemSettings* settings)
 {
 	FILE *file = NULL;

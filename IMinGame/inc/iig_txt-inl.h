@@ -65,6 +65,10 @@ IIG_LANGSTR_MACRO(RELOADLBL,\
 	"Settings",
 	"Options")
 
+IIG_LANGSTR_MACRO(BLACKLISTBTNLBL,\
+	"Blacklist it",
+	"En liste noire")
+
 IIG_LANGSTR_MACRO(EXITLBL,\
 	"Exit",\
 	"Quitter")

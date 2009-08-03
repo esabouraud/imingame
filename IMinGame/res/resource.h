@@ -2,18 +2,20 @@
 // Microsoft Visual C++ generated include file.
 // Used by resource.rc
 //
-#define IDC_STATIC          -1
-#define IDI_ICON1          101
+#define IDC_STATIC           -1
+#define IDI_ICON1           101
 //#define ID_BUTTON_MINIMIZE 102
 //#define ID_BUTTON_EXIT     103
-#define ID_EDIT_TITLE      104
+#define ID_EDIT_TITLE       104
 //#define ID_EDIT_INTERVAL   105
 //#define ID_BUTTON_MUSIC    106
 //#define ID_BUTTON_GAME     107
 //#define ID_EDIT_STEAM      108
-#define ID_BUTTON_REFRESH  109
-#define ID_BUTTON_SETTINGS 110
-#define IDB_LOGO           111
+#define ID_STATIC_USRMSG    107
+#define ID_BUTTON_BLACKLIST 108
+#define ID_BUTTON_REFRESH   109
+#define ID_BUTTON_SETTINGS  110
+#define IDB_LOGO            111
 
 #define IDD_OPTIONS        200
 #define IDC_COMBO_LANGUAGE 201

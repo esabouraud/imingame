@@ -91,6 +91,28 @@ BOOL CALLBACK EnumWindowsProc( HWND hwnd, LPARAM lParam )
     return TRUE;
 }
 
+
+BOOL GetProcessName(TCHAR* procname, size_t procnamesize, DWORD processId) {
+
+	DWORD cbNeeded;
+    HMODULE hMod[1];
+	BOOL ret = FALSE;
+
+	// Get a handle to the process.
+	HANDLE hProcess = OpenProcess( PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, processId );
+
+	if (NULL != hProcess) {
+		if ( EnumProcessModules( hProcess, hMod, sizeof(hMod), &cbNeeded) ) {
+			// Get the process name.
+			GetModuleBaseName(hProcess , hMod[0], procname, procnamesize / sizeof(TCHAR) );
+			ret = TRUE;
+		}
+		CloseHandle( hProcess );
+	}
+	return ret;
+}
+
+
 /**
 	\brief Check if a process is a game, trigger status update if it is
 	\param [in] processId : PID of the process to check
