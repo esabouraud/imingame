@@ -139,6 +139,7 @@ LRESULT WINAPI IMinGameProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 		{
 			BITMAP bm;
 			PAINTSTRUCT ps;
+			RECT rect;
 
 			hdc = BeginPaint(hWnd, &ps);
 
@@ -147,7 +148,10 @@ LRESULT WINAPI IMinGameProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 
 			GetObject(g_hbmBkgnd, sizeof(bm), &bm);
 
-			BitBlt(hdc, 0, 0, bm.bmWidth, bm.bmHeight, hdcMem, 0, 0, SRCCOPY);
+			GetClientRect(hWnd, &rect);
+			SetStretchBltMode(hdc, HALFTONE);
+			StretchBlt(hdc, 0, 0, rect.right, rect.bottom, hdcMem, 0, 0, bm.bmWidth, bm.bmHeight, SRCCOPY);
+			//BitBlt(hdc, 0, 0, bm.bmWidth, bm.bmHeight, hdcMem, 0, 0, SRCCOPY);
 
 			SelectObject(hdcMem, hbmOld);
 			DeleteDC(hdcMem);
