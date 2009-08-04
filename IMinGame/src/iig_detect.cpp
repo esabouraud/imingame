@@ -130,20 +130,20 @@ BOOL TryProcess(DWORD processId) {
 
 	if (NULL != hProcess) {
 		if ( EnumProcessModules( hProcess, hMod, sizeof(hMod), &cbNeeded) ) {
-			TCHAR szProcessName[1024+64];
-			int i = 0;
+			TCHAR szProcessName[255];
+			struct bwListElt* elt = NULL;
 			// Get the process name.
 			GetModuleBaseName( hProcess, hMod[0], szProcessName, sizeof(szProcessName)/sizeof(TCHAR) );
 			
-			i = bwListSearch(szProcessName, gSystemSettings.whiteList, 0, gSystemSettings.whiteListSize);
-			if (i >= 0) {
+			elt = bwListSearch(szProcessName, gSystemSettings.whiteList, gSystemSettings.whiteListSize);
+			if (elt) {
 				// Process is whitelisted, update status immediately
-				setMsnNowPlaying(gSystemSettings.userMessage, gSystemSettings.whiteList[i].windowName, gSystemSettings.asGame, gHwnd);
-				updateWindowText(gSystemSettings.whiteList[i].windowName);
+				setMsnNowPlaying(gSystemSettings.userMessage, elt->windowName, gSystemSettings.asGame, gHwnd);
+				updateWindowText(elt->windowName);
 				gGameProcessId = processId;
 				isPlaying = TRUE;
 			} else {
-				if(!isInBWList(szProcessName, gSystemSettings.blackList, gSystemSettings.blackListSize)) {
+				if(!bwListSearch(szProcessName, gSystemSettings.blackList, gSystemSettings.blackListSize)) {
 					// Process is not blacklisted, check its loaded modules
 					BOOL hasModuleLoaded = FALSE;
 					UINT j = 0, k = 0;

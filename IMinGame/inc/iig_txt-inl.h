@@ -34,7 +34,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 IIG_LANGSTR_MACRO(LANG,\
 	"English",\
-	"French")
+	"Français")
 
 IIG_LANGSTR_MACRO(USERMSGLBL,\
 	"Message:",\
@@ -76,6 +76,14 @@ IIG_LANGSTR_MACRO(EXITLBL,\
 IIG_LANGSTR_MACRO(EXITMBOX,\
 	"This will stop showing games in your MSN status, are you sure?",\
 	"Votre statut MSN ne sera plus mis à jour avec vos jeux, êtes vous sûr ?")
+
+IIG_LANGSTR_MACRO(BLACKLISTCONFIRM,\
+	"The current application will no longer be considered as a game, are you sure ?",\
+	"L'application courante ne sera plus considérée comme un jeu, êtes vous sûr ?")
+
+IIG_LANGSTR_MACRO(BLACKLISTWHITECONFIRM,\
+	"The current application was in white list, it will no longer be considered as a game, are you sure ?",\
+	"L'application courante était en liste blanche et ne sera plus considérée comme un jeu, êtes vous sûr ?")
 
 IIG_LANGSTR_MACRO(HELPTXT,\
 	"The application stays active in the system tray.\nYou can now start a game of your choice and it will appear in MSN Messenger.",\

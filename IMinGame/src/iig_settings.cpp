@@ -48,6 +48,7 @@ static const TCHAR* defaultBlackList[] = {
 	_T("OPERA.EXE"),
 	_T("WINAMP.EXE"),
 	_T("MPLAYERC.EXE"),
+	_T("STEAM.EXE"),
 };
 
 //* \brief Do not check these processes for game modules
@@ -56,46 +57,114 @@ static const TCHAR* defaultWhiteList[][2] = {
 	{ _T("WinBej.exe"), _T("Bejeweled") },
 };
 
-static int bwListCompare(const void* proc1, const void* proc2) {
-	return _tcsicmp(((struct bwListElt*)proc1)->procname, ((struct bwListElt*)proc2)->procname);
+static int bwListCompare(const void* elt1, const void* elt2) {
+	return _tcsicmp(((struct bwListElt*)elt1)->procname, ((struct bwListElt*)elt2)->procname);
 }
 
-int bwListSearch(const TCHAR* procname, const struct bwListElt list[], int low, int high)
-{
-	int middle;
-	int ret;
+static int bwListCompareKey(const void* key, const void* elt) {
+	return _tcsicmp((TCHAR*)key, ((struct bwListElt*)elt)->procname);
+}
 
-	if (low >= high) {
-		return -1;
+struct bwListElt* bwListSearch(const TCHAR* procname, const struct bwListElt list[], int listSize) {
+	return (struct bwListElt*)bsearch(procname, list, listSize, sizeof(*list), bwListCompareKey);
+}
+
+static void SaveBlackList(const SystemSettings* settings) {
+	FILE *file = NULL;
+	UINT i = 0;
+	if ((file = _tfopen(_T("blist.txt"), _T("w"))) != NULL) {
+		for (i = 0; i < settings->blackListSize; ++i) {
+			_ftprintf(file, _T("%s\n"), settings->blackList[i].procname);
+		}
+		fclose(file);
 	}
+}
 
-	while ( low <= high ) {
-		middle = ( low + high ) / 2;
+static void SaveWhiteList(const SystemSettings* settings) {
+	FILE *file = NULL;
+	UINT i = 0;
+	if ((file = _tfopen(_T("wlist.txt"), _T("w"))) != NULL) {
+		for (i = 0; i < settings->whiteListSize; ++i) {
+			_ftprintf(file, _T("%s|%s\n"), settings->whiteList[i].procname, settings->whiteList[i].windowName);
+		}
+		fclose(file);
+	}
+}
 
-		ret = _tcsicmp(procname, list[middle].procname);
-		if ( ret == 0 ) {
-			return middle;
-		} else if ( ret < 0) {
-			high = middle - 1;
-		} else {
-			low = middle + 1;
+static void LoadWhiteList(SystemSettings* settings) {
+	FILE *file = NULL;
+	// Read whitelist, restore default if missing
+	settings->whiteListSize = 0;
+	if ((file = _tfopen(_T("wlist.txt"), _T("r"))) != NULL) {
+		while (settings->whiteListSize < sizeof(settings->whiteList)/sizeof(*settings->whiteList)) {
+			if (_ftscanf(file, _T("%255[^|]|%255[^\n]\n"), settings->whiteList[settings->whiteListSize].procname, settings->whiteList[settings->whiteListSize].windowName) == 2) {
+				++settings->whiteListSize;
+			} else {
+				break;
+			}
+		}
+		fclose(file);	
+	} else {
+		while (settings->whiteListSize < sizeof(defaultWhiteList)/sizeof(*defaultWhiteList)
+			&& settings->whiteListSize < sizeof(settings->whiteList)/sizeof(*settings->whiteList)) {
+			_tcsncpy(settings->whiteList[settings->whiteListSize].procname, defaultWhiteList[settings->whiteListSize][0], 255);
+			_tcsncpy(settings->whiteList[settings->whiteListSize].windowName, defaultWhiteList[settings->whiteListSize][1], 255);
+			++settings->whiteListSize;
 		}
 	}
-
-	return -1;
+	qsort(settings->whiteList, settings->whiteListSize, sizeof(*settings->whiteList), bwListCompare);
 }
 
-BOOL isInBWList(const TCHAR* procname, const struct bwListElt list[], UINT num) {
-	return bwListSearch(procname, list, 0, num) >= 0;
-}
-
-
-void AddToBlackList(SystemSettings* settings, TCHAR* procname) {
-	if (settings->blackListSize < sizeof(settings->blackList)/sizeof(*settings->blackList)) {
-		_tcscpy(settings->blackList[settings->blackListSize].procname, procname);
-		++settings->blackListSize;
-		SaveSettings(settings);
+static void LoadBlackList(SystemSettings* settings) {
+	FILE *file = NULL;
+	// Read blacklist, restore default if missing
+	settings->blackListSize = 0;
+	if ((file = _tfopen(_T("blist.txt"), _T("r"))) != NULL) {
+		while (settings->blackListSize < sizeof(settings->blackList)/sizeof(*settings->blackList)) {
+			if (_ftscanf(file, _T("%255[^\n]\n"), settings->blackList[settings->blackListSize].procname) == 1) {
+				++settings->blackListSize;
+			} else {
+				break;
+			}
+		}
+		fclose(file);
+	} else {
+		while (settings->blackListSize < sizeof(defaultBlackList)/sizeof(*defaultBlackList)
+			&& settings->blackListSize < sizeof(settings->blackList)/sizeof(*settings->blackList)) {
+			_tcsncpy(settings->blackList[settings->blackListSize].procname, defaultBlackList[settings->blackListSize], 255);
+			++settings->blackListSize;
+		}
 	}
+	qsort(settings->blackList, settings->blackListSize, sizeof(*settings->blackList), bwListCompare);
+}
+
+static void AddToBWList(struct bwListElt list[], UINT listCapacity, UINT* pListSize, const TCHAR* procname) {
+	if (*pListSize < listCapacity) {
+		_tcscpy(list[*pListSize].procname, procname);
+		++(*pListSize);
+		qsort(list, *pListSize, sizeof(*list), bwListCompare);	
+	}
+}
+
+static void RemoveFromBWList(struct bwListElt list[], UINT listCapacity, UINT* pListSize, const TCHAR* procname) {
+	struct bwListElt* elt = bwListSearch(procname, list, *pListSize);
+	if (elt) {
+		int len = &list[*pListSize] - elt;
+		if (--len) {
+			memmove(elt, elt + 1, len * sizeof(*list));
+		}
+		--(*pListSize);
+	}
+}
+
+void AddToBlackList(SystemSettings* settings, const TCHAR* procname) {
+	AddToBWList(settings->blackList, sizeof(settings->blackList)/sizeof(*settings->blackList), &settings->blackListSize, procname);
+	SaveBlackList(settings);
+}
+
+void RemoveFromWhiteList(SystemSettings* settings, const TCHAR* procname) {
+	RemoveFromBWList(settings->whiteList, sizeof(settings->whiteList)/sizeof(*settings->whiteList), &settings->whiteListSize, procname);
+	SaveWhiteList(settings);
 }
 
 void SaveSettings(const SystemSettings* settings)
@@ -108,20 +177,10 @@ void SaveSettings(const SystemSettings* settings)
 		fclose(file);
     }
 
-	if ((file = _tfopen(_T("wlist.txt"), _T("w"))) != NULL) {
-		for (i = 0; i < settings->whiteListSize; ++i) {
-			_ftprintf(file, _T("%s|%s\n"), settings->whiteList[i].procname, settings->whiteList[i].windowName);
-		}
-		fclose(file);
-	}
-
-	if ((file = _tfopen(_T("blist.txt"), _T("w"))) != NULL) {
-		for (i = 0; i < settings->blackListSize; ++i) {
-			_ftprintf(file, _T("%s\n"), settings->blackList[i].procname);
-		}
-		fclose(file);
-	}
+	SaveWhiteList(settings);
+	SaveBlackList(settings);
 }
+
 
 void LoadSettings(SystemSettings* settings)
 {
@@ -152,44 +211,6 @@ void LoadSettings(SystemSettings* settings)
 		_tcscpy(settings->userMessage, getLangString(settings->lang, IIG_LANGSTR_USERMSGDEF));
      }
 
-	// Read whitelist, restore default if missing
-	settings->whiteListSize = 0;
-	if ((file = _tfopen(_T("wlist.txt"), _T("r"))) != NULL) {
-		while (settings->whiteListSize < sizeof(settings->whiteList)/sizeof(*settings->whiteList)) {
-			if (_ftscanf(file, _T("%255[^|]|%255[^\n]\n"), settings->whiteList[settings->whiteListSize].procname, settings->whiteList[settings->whiteListSize].windowName) == 2) {
-				++settings->whiteListSize;
-			} else {
-				break;
-			}
-		}
-		fclose(file);	
-	} else {
-		while (settings->whiteListSize < sizeof(defaultWhiteList)/sizeof(*defaultWhiteList)
-			&& settings->whiteListSize < sizeof(settings->whiteList)/sizeof(*settings->whiteList)) {
-			_tcsncpy(settings->whiteList[settings->whiteListSize].procname, defaultWhiteList[settings->whiteListSize][0], 255);
-			_tcsncpy(settings->whiteList[settings->whiteListSize].windowName, defaultWhiteList[settings->whiteListSize][1], 255);
-			++settings->whiteListSize;
-		}
-	}
-	qsort(settings->whiteList, settings->whiteListSize, sizeof(*settings->whiteList), bwListCompare);
-
-	// Read blacklist, restore default if missing
-	settings->blackListSize = 0;
-	if ((file = _tfopen(_T("blist.txt"), _T("r"))) != NULL) {
-		while (settings->blackListSize < sizeof(settings->blackList)/sizeof(*settings->blackList)) {
-			if (_ftscanf(file, _T("%255[^\n]\n"), settings->blackList[settings->blackListSize].procname) == 1) {
-				++settings->blackListSize;
-			} else {
-				break;
-			}
-		}
-		fclose(file);
-	} else {
-		while (settings->blackListSize < sizeof(defaultBlackList)/sizeof(*defaultBlackList)
-			&& settings->blackListSize < sizeof(settings->blackList)/sizeof(*settings->blackList)) {
-			_tcsncpy(settings->blackList[settings->blackListSize].procname, defaultBlackList[settings->blackListSize], 255);
-			++settings->blackListSize;
-		}
-	}
-	qsort(settings->blackList, settings->blackListSize, sizeof(*settings->blackList), bwListCompare);
+	LoadWhiteList(settings);
+	LoadBlackList(settings);
 }

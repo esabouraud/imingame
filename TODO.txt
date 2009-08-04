@@ -1,12 +1,16 @@
 Maintenance : 
-
-* better handling of text file to store settings
-* german and spanish language support
+	* better handling of ini file to store settings
+	* german and spanish language support
 
 New features ideas :
-
-* add an option to display in-game time
-* add option to provide steam profile "join game" link ?
-* launch on windows startup option in installer
-* hide tray icon option
-* right click menu on tray icon
+	* add GTalk "Music Status" support (is it possible without plugin) ?
+	* handle detection of non directx/opengl games (ex: popcap games)
+	* update name of game some time after in launches
+	* button to add current application to blacklist
+	* drag&drop to add application to whitelist
+	* remove/increase limit on white/black list size
+	* add option to display in-game time
+	* add option to provide steam profile "join game" link (unlikely) ?
+	* add option to disable exit confirmation message
+	* launch on windows startup option in installer (but avoid unnecessary hooking)
+	* right click menu on tray icon (quit, force update)

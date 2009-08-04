@@ -251,8 +251,21 @@ LRESULT WINAPI IMinGameProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 					if (gGameProcessId) {
 						TCHAR procname[255];
 						if (GetProcessName(procname, sizeof(procname), gGameProcessId)) {
-							AddToBlackList(&gSystemSettings, procname);
-							PoolProcesses();
+							struct bwListElt* whiteElt = bwListSearch(procname, gSystemSettings.whiteList, gSystemSettings.whiteListSize);
+							const TCHAR* question = NULL;
+							if (whiteElt) {
+								question = getLangString(gSystemSettings.lang, IIG_LANGSTR_BLACKLISTWHITECONFIRM);
+							} else {
+								question = getLangString(gSystemSettings.lang, IIG_LANGSTR_BLACKLISTCONFIRM);
+							}
+
+							if(MessageBox(gHwnd, question, getLangString(gSystemSettings.lang, IIG_LANGSTR_BLACKLISTBTNLBL), MB_YESNO | MB_ICONQUESTION) == IDYES) {
+								if (whiteElt) {
+									RemoveFromWhiteList(&gSystemSettings, procname);
+								}
+								AddToBlackList(&gSystemSettings, procname);
+								PoolProcesses();
+							}
 						}
 					}
 				}

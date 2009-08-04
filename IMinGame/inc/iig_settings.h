@@ -64,14 +64,13 @@ extern void LoadSettings(SystemSettings* settings);
 	\brief Binary search for process name in sorted black/white list
 	\param [in] procname: process name to look for
 	\param [in] list: list to search
-	\param [in] low: lower bound of list
-	\param [in] high : higher bound of list
-	\return index in;list if found, else -1
+	\param [in] listSize : number of elements in list
+	\return pointer on element in list if found, else NULL
 */
-extern int bwListSearch(const TCHAR* procname, const struct bwListElt list[], int low, int high);
+extern struct bwListElt* bwListSearch(const TCHAR* procname, const struct bwListElt list[], int listSize);
 
-extern BOOL isInBWList(const TCHAR* procname, const struct bwListElt list[], UINT num);
+extern void AddToBlackList(SystemSettings* settings, const TCHAR* procname);
 
-extern void AddToBlackList(SystemSettings* settings, TCHAR* procname);
+extern void RemoveFromWhiteList(SystemSettings* settings, const TCHAR* procname);
 
 #endif
