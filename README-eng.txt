@@ -29,10 +29,14 @@ with the musictracker plugin (http://code.google.com/p/pidgin-musictracker).
 
 * Black/White lists
 
-As of version 0.2.0 it implements process blacklisting and whitelisting.
+Applications can be blacklisted or whitelisted based on their process name.
+The application currently detected can be blacklisted by pressing the
+"Blacklist it" button. Any application (not just games) can be detected 
+if it is whitelisted, which is accomplished by drag&dropping its exe file
+into the main window.
+
 Both can be edited from the settings dialog. Once it is done, save the file
-then click the apply button. It should be noted that IMinGame can be used
-with any application thanks to the whitelist, not just games.
+THEN click the apply button.
 
 The format for white list file is (without <>) :
 <process name>|<name sent to MSN>

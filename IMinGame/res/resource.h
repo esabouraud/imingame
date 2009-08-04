@@ -30,6 +30,11 @@
 #define ID_BUTTON_BLIST    210
 #define ID_BUTTON_WLIST    211
 
+#define IDD_WHITELIST      300
+#define ID_GROUP_WLNAME    301
+#define ID_STATIC_WLNAME   302
+#define ID_EDIT_WLNAME     303
+
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED

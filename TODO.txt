@@ -6,7 +6,6 @@ New features ideas :
 	* add GTalk "Music Status" support (is it possible without plugin) ?
 	* handle detection of non directx/opengl games (ex: popcap games)
 	* update name of game some time after in launches
-	* button to add current application to blacklist
 	* drag&drop to add application to whitelist
 	* remove/increase limit on white/black list size
 	* add option to display in-game time

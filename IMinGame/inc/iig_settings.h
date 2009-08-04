@@ -36,9 +36,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <windows.h>
 #include <tchar.h>
 
+#define IIG_PROCNAME_MAXLEN _MAX_FNAME
+#define IIG_APPNAME_MAXLEN _MAX_FNAME
+
 struct bwListElt {
-	TCHAR procname[256];
-	TCHAR windowName[256];
+	TCHAR procname[IIG_PROCNAME_MAXLEN];
+	TCHAR windowName[IIG_APPNAME_MAXLEN];
 };
 
 typedef struct _SystemSettings

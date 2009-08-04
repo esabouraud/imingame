@@ -1,7 +1,8 @@
 2009-08-05 version 0.2.2:
-	* Stretch background to display properly with all window decorations
-	* Add a "Blacklist it" button to add application currently detected to blacklist
-	* Blacklist it button can also remove from whitelist
+	* Added drag&drop a file into main window to add to whitelist
+	* Added a "Blacklist it" button to add application currently detected to blacklist
+	* Stretched background to display properly with all window decorations
+	* Updated readme
 
 2009-08-03 version 0.2.1:
 	* Fixed black/white list not editable when program is first run

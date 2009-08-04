@@ -31,9 +31,14 @@ comme Pidgin (http://www.pidgin.im) avec le plugin musictracker
 
 * Listes noire/blanche
 
-A partir de la version 0.2.0, sont implémentées des listes noire et blanche.
+Les applications peuvent être mises en liste noire ou blanche, identifiées
+par leur nom de processus. Une application détectée peut être mise en liste
+noire en cliquant sur le bouton "En liste noire". N'importe quelle application
+peut être détectée grâce à la liste blanche (pas seulement les jeux), pour
+cela il faut glisser&déposer le fichier exe associé dans la fenêtre principale.
+
 Les deux peuvent être modifiées à partir de l'écran d'options. Une fois
-les modifications effectuées, sauver le fichier et appuyer sur le bouton
+les modifications effectuées, sauver le fichier et ENSUITE appuyer sur le bouton
 Appliquer. De plus, IMinGame peut être utilisé avec n'importe quelle
 application grâce à la liste blanche, pas seulement les jeux.
 

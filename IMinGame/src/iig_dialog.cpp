@@ -49,11 +49,16 @@ extern DWORD gGameProcessId;
 static HBITMAP g_hbmBkgnd = NULL;
 static BOOL gHidden = TRUE;
 
+// Used to exchange data between white list dialog and main dialog
+static TCHAR procname[IIG_PROCNAME_MAXLEN];
+static TCHAR appname[IIG_APPNAME_MAXLEN];
+
 /**
 	\brief Set captions for all elements of settings dialog
 	\param [in] : settings dialog handle
 */
 void initSettingsDialogText(HWND hwnd) {
+	SetWindowText(hwnd, getLangString(gSystemSettings.lang, IIG_LANGSTR_SETTINGSLBL));
 	SetDlgItemText(hwnd, ID_GROUP_EMUMODE, getLangString(gSystemSettings.lang, IIG_LANGSTR_EMUMODELBL));
 	SetDlgItemText(hwnd, ID_RADIO_EMUMUSIC, getLangString(gSystemSettings.lang, IIG_LANGSTR_ACTMUSICLBL));
 	SetDlgItemText(hwnd, ID_RADIO_EMUGAME, getLangString(gSystemSettings.lang, IIG_LANGSTR_ACTGAMELBL));
@@ -111,6 +116,46 @@ BOOL CALLBACK SettingsDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lPa
 					break;
 				case ID_BUTTON_WLIST:
 					ShellExecute(NULL, _T("open"), _T("wlist.txt"), NULL, NULL, SW_SHOW);
+					break;
+			}
+			break;
+		case WM_CLOSE:
+			EndDialog(hwnd, IDCANCEL);
+			break;
+		default:
+			return FALSE;
+	}
+
+	return TRUE;
+}
+
+
+
+/**
+	\brief Settings dialog message processing
+*/
+BOOL CALLBACK WhiteListDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam)
+{
+	switch(Message) {
+		case WM_INITDIALOG:
+			{
+				SetWindowText(hwnd, getLangString(gSystemSettings.lang, IIG_LANGSTR_WHITELISTDLG));
+				SetDlgItemText(hwnd, IDOK, getLangString(gSystemSettings.lang, IIG_LANGSTR_OKLBL));
+				SetDlgItemText(hwnd, IDCANCEL, getLangString(gSystemSettings.lang, IIG_LANGSTR_CANCELLBL));
+				SetDlgItemText(hwnd, ID_GROUP_WLNAME, getLangString(gSystemSettings.lang, IIG_LANGSTR_WHITELISTDLGGRPBX));
+				SetDlgItemText(hwnd, ID_STATIC_WLNAME, procname);
+				SetDlgItemText(hwnd, ID_EDIT_WLNAME, appname);
+				return TRUE;
+			}
+		
+		case WM_COMMAND:
+			switch(LOWORD(wParam)) {
+				case IDCANCEL:
+					EndDialog(hwnd, IDCANCEL);
+					break;
+				case IDOK:
+					GetDlgItemText(hwnd, ID_EDIT_WLNAME, appname, sizeof(appname)/sizeof(*appname));
+					EndDialog(hwnd, IDOK);
 					break;
 			}
 			break;
@@ -251,7 +296,6 @@ LRESULT WINAPI IMinGameProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 			case ID_BUTTON_BLACKLIST:
 				{
 					if (gGameProcessId) {
-						TCHAR procname[255];
 						if (GetProcessName(procname, sizeof(procname), gGameProcessId)) {
 							struct bwListElt* whiteElt = bwListSearch(procname, gSystemSettings.whiteList, gSystemSettings.whiteListSize);
 							const TCHAR* question = NULL;
@@ -265,6 +309,7 @@ LRESULT WINAPI IMinGameProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 								if (whiteElt) {
 									RemoveFromWhiteList(&gSystemSettings, procname);
 								}
+								RemoveFromBlackList(&gSystemSettings, procname);
 								AddToBlackList(&gSystemSettings, procname);
 								PoolProcesses();
 							}
@@ -280,14 +325,24 @@ LRESULT WINAPI IMinGameProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 			HDROP hDrop = (HDROP)wParam;
 			TCHAR filepath[_MAX_PATH];
 			if (DragQueryFile(hDrop, 0, filepath, sizeof(filepath)/sizeof(*filepath))) {
-				TCHAR filename[_MAX_FNAME];
 				TCHAR fileext[_MAX_EXT];
-				_tsplitpath(filepath, NULL, NULL, filename, fileext);
-				if (_tcslen(filename) + _tcslen(fileext) < _MAX_FNAME) {
-					_tcscat(filename, fileext);
-					//* \todo Ask user for window name before adding to white list
-					RemoveFromBlackList(&gSystemSettings, filename);
-					AddToWhiteList(&gSystemSettings, filename, filename);
+				_tsplitpath(filepath, NULL, NULL, procname, fileext);
+				if (_tcslen(procname) + _tcslen(fileext) < _MAX_FNAME) {
+					//if (_tcsicmp(fileext, _T("lnk)")) == 0) {
+					//}
+					_tcscat(procname, fileext);
+					_tcscpy(appname, procname);
+					
+					if (DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_WHITELIST), hWnd, WhiteListDlgProc) == IDOK) {
+						RemoveFromBlackList(&gSystemSettings, procname);
+						RemoveFromWhiteList(&gSystemSettings, procname);
+						if (_tcscmp(appname, _T("")) == 0) {
+							AddToWhiteList(&gSystemSettings, procname, procname);
+						} else {
+							AddToWhiteList(&gSystemSettings, procname, appname);
+						}
+						PoolProcesses();
+					}
 				}
 			}
 			DragFinish(hDrop);

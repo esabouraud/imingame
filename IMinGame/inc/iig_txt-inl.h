@@ -61,7 +61,7 @@ IIG_LANGSTR_MACRO(MINITRAYLBL,\
 	"Minimize to tray",\
 	"Réduire")
 
-IIG_LANGSTR_MACRO(RELOADLBL,\
+IIG_LANGSTR_MACRO(SETTINGSLBL,\
 	"Settings",
 	"Options")
 
@@ -84,6 +84,14 @@ IIG_LANGSTR_MACRO(BLACKLISTCONFIRM,\
 IIG_LANGSTR_MACRO(BLACKLISTWHITECONFIRM,\
 	"The current application was in white list, it will no longer be considered as a game, are you sure ?",\
 	"L'application courante était en liste blanche et ne sera plus considérée comme un jeu, êtes vous sûr ?")
+
+IIG_LANGSTR_MACRO(WHITELISTDLG,\
+	"Add to whitelist",\
+	"Ajouter à la liste blanche")
+
+IIG_LANGSTR_MACRO(WHITELISTDLGGRPBX,\
+	"Enter a display name for application",\
+	"Saisir un nom pour l'application")
 
 IIG_LANGSTR_MACRO(HELPTXT,\
 	"The application stays active in the system tray.\nYou can now start a game of your choice and it will appear in MSN Messenger.",\
