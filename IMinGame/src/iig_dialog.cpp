@@ -91,7 +91,8 @@ BOOL CALLBACK SettingsDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lPa
 				case ID_BUTTON_OK:
 				case ID_BUTTON_APPLY:
 					// Reload whitelist and black list
-					LoadSettings(&gSystemSettings);
+					LoadBlackList(&gSystemSettings);
+					LoadWhiteList(&gSystemSettings);
 
 					gSystemSettings.asGame = (BST_CHECKED == SendDlgItemMessage(hwnd, ID_RADIO_EMUGAME, BM_GETCHECK, 0, 0));
 					gSystemSettings.lang = SendDlgItemMessage(hwnd, IDC_COMBO_LANGUAGE, CB_GETCURSEL, 0, 0);
@@ -100,6 +101,7 @@ BOOL CALLBACK SettingsDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lPa
 					resetWindowLabels(&gSystemSettings);
 
 					SaveSettings(&gSystemSettings);
+					PoolProcesses();
 					if (LOWORD(wParam) == ID_BUTTON_OK) {
 						EndDialog(hwnd, IDOK);
 					}
@@ -223,8 +225,8 @@ LRESULT WINAPI IMinGameProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 					int ret = DialogBox(GetModuleHandle(NULL), 
 					MAKEINTRESOURCE(IDD_OPTIONS), hWnd, SettingsDlgProc);
 					if(ret == IDOK){
-						//* \bug Makes the main window flicker
-						PoolProcesses();
+						//* \bug Makes the main window flickering obvious -> done in settings dialog instead
+						//PoolProcesses();
 					}
 				}
 				break;
@@ -273,6 +275,24 @@ LRESULT WINAPI IMinGameProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
         }
         return 0;
 
+	case WM_DROPFILES:
+		{
+			HDROP hDrop = (HDROP)wParam;
+			TCHAR filepath[_MAX_PATH];
+			if (DragQueryFile(hDrop, 0, filepath, sizeof(filepath)/sizeof(*filepath))) {
+				TCHAR filename[_MAX_FNAME];
+				TCHAR fileext[_MAX_EXT];
+				_tsplitpath(filepath, NULL, NULL, filename, fileext);
+				if (_tcslen(filename) + _tcslen(fileext) < _MAX_FNAME) {
+					_tcscat(filename, fileext);
+					//* \todo Ask user for window name before adding to white list
+					RemoveFromBlackList(&gSystemSettings, filename);
+					AddToWhiteList(&gSystemSettings, filename, filename);
+				}
+			}
+			DragFinish(hDrop);
+		}
+		break;
     case WM_SYSCOMMAND:
         {
             switch (wParam)

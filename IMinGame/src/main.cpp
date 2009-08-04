@@ -87,6 +87,7 @@ int APIENTRY _tWinMain(
     _tcscpy(tnd.szInfo, getLangString(gSystemSettings.lang, IIG_LANGSTR_HELPTXT));
     Shell_NotifyIcon(NIM_MODIFY,&tnd);
 
+	DragAcceptFiles(gHwnd, TRUE);
     
 	if (gSystemSettings.legacyTimer) {
 		SetTimer( gHwnd, 0, gSystemSettings.interval * 1000, (TIMERPROC)NULL );

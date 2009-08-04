@@ -41,6 +41,7 @@ HWND txtUserMessage;
 HWND lblGame;
 
 extern HWND gHwnd;
+extern DWORD gGameProcessId;
 extern LRESULT WINAPI IMinGameProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam );
 
 #define APP_NAME    _T("IMinGame")
@@ -90,8 +91,10 @@ void resetWindowLabels(const SystemSettings* settings) {
 	SetDlgItemText(gHwnd, ID_BUTTON_REFRESH, getLangString(settings->lang, IIG_LANGSTR_REFRESHLBL));
 	SetDlgItemText(gHwnd, ID_BUTTON_BLACKLIST, getLangString(settings->lang, IIG_LANGSTR_BLACKLISTBTNLBL));
 	
-	SendMessage(lblGame, WM_SETTEXT, 0, (LPARAM)getLangString(settings->lang, IIG_LANGSTR_GAMENAMEDEF));
-    InvalidateRect(gHwnd, NULL, TRUE);
+	if (!gGameProcessId) {
+		SendMessage(lblGame, WM_SETTEXT, 0, (LPARAM)getLangString(settings->lang, IIG_LANGSTR_GAMENAMEDEF));
+	}
+	InvalidateRect(gHwnd, NULL, TRUE);
 }
 
 void BuildGUI(HINSTANCE hInst, const SystemSettings* settings)

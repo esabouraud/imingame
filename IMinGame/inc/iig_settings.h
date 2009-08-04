@@ -60,6 +60,14 @@ extern void SaveSettings(const SystemSettings* settings);
 
 extern void LoadSettings(SystemSettings* settings);
 
+extern void SaveBlackList(const SystemSettings* settings);
+
+extern void LoadBlackList(SystemSettings* settings);
+
+extern void SaveWhiteList(const SystemSettings* settings);
+
+extern void LoadWhiteList(SystemSettings* settings);
+
 /**
 	\brief Binary search for process name in sorted black/white list
 	\param [in] procname: process name to look for
@@ -70,6 +78,10 @@ extern void LoadSettings(SystemSettings* settings);
 extern struct bwListElt* bwListSearch(const TCHAR* procname, const struct bwListElt list[], int listSize);
 
 extern void AddToBlackList(SystemSettings* settings, const TCHAR* procname);
+
+extern void RemoveFromBlackList(SystemSettings* settings, const TCHAR* procname);
+
+extern void AddToWhiteList(SystemSettings* settings, const TCHAR* procname, const TCHAR* windowName);
 
 extern void RemoveFromWhiteList(SystemSettings* settings, const TCHAR* procname);
 

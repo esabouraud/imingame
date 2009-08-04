@@ -69,7 +69,7 @@ struct bwListElt* bwListSearch(const TCHAR* procname, const struct bwListElt lis
 	return (struct bwListElt*)bsearch(procname, list, listSize, sizeof(*list), bwListCompareKey);
 }
 
-static void SaveBlackList(const SystemSettings* settings) {
+void SaveBlackList(const SystemSettings* settings) {
 	FILE *file = NULL;
 	UINT i = 0;
 	if ((file = _tfopen(_T("blist.txt"), _T("w"))) != NULL) {
@@ -80,7 +80,7 @@ static void SaveBlackList(const SystemSettings* settings) {
 	}
 }
 
-static void SaveWhiteList(const SystemSettings* settings) {
+void SaveWhiteList(const SystemSettings* settings) {
 	FILE *file = NULL;
 	UINT i = 0;
 	if ((file = _tfopen(_T("wlist.txt"), _T("w"))) != NULL) {
@@ -91,7 +91,7 @@ static void SaveWhiteList(const SystemSettings* settings) {
 	}
 }
 
-static void LoadWhiteList(SystemSettings* settings) {
+void LoadWhiteList(SystemSettings* settings) {
 	FILE *file = NULL;
 	// Read whitelist, restore default if missing
 	settings->whiteListSize = 0;
@@ -115,7 +115,7 @@ static void LoadWhiteList(SystemSettings* settings) {
 	qsort(settings->whiteList, settings->whiteListSize, sizeof(*settings->whiteList), bwListCompare);
 }
 
-static void LoadBlackList(SystemSettings* settings) {
+void LoadBlackList(SystemSettings* settings) {
 	FILE *file = NULL;
 	// Read blacklist, restore default if missing
 	settings->blackListSize = 0;
@@ -138,9 +138,12 @@ static void LoadBlackList(SystemSettings* settings) {
 	qsort(settings->blackList, settings->blackListSize, sizeof(*settings->blackList), bwListCompare);
 }
 
-static void AddToBWList(struct bwListElt list[], UINT listCapacity, UINT* pListSize, const TCHAR* procname) {
+static void AddToBWList(struct bwListElt list[], UINT listCapacity, UINT* pListSize, const TCHAR* procname, const TCHAR* windowName) {
 	if (*pListSize < listCapacity) {
 		_tcscpy(list[*pListSize].procname, procname);
+		if (windowName) {
+			_tcscpy(list[*pListSize].windowName, windowName);
+		}
 		++(*pListSize);
 		qsort(list, *pListSize, sizeof(*list), bwListCompare);	
 	}
@@ -158,8 +161,18 @@ static void RemoveFromBWList(struct bwListElt list[], UINT listCapacity, UINT* p
 }
 
 void AddToBlackList(SystemSettings* settings, const TCHAR* procname) {
-	AddToBWList(settings->blackList, sizeof(settings->blackList)/sizeof(*settings->blackList), &settings->blackListSize, procname);
+	AddToBWList(settings->blackList, sizeof(settings->blackList)/sizeof(*settings->blackList), &settings->blackListSize, procname, NULL);
 	SaveBlackList(settings);
+}
+
+void RemoveFromBlackList(SystemSettings* settings, const TCHAR* procname) {
+	RemoveFromBWList(settings->blackList, sizeof(settings->blackList)/sizeof(*settings->blackList), &settings->blackListSize, procname);
+	SaveBlackList(settings);
+}
+
+void AddToWhiteList(SystemSettings* settings, const TCHAR* procname, const TCHAR* windowName) {
+	AddToBWList(settings->whiteList, sizeof(settings->whiteList)/sizeof(*settings->whiteList), &settings->whiteListSize, procname, windowName);
+	SaveWhiteList(settings);
 }
 
 void RemoveFromWhiteList(SystemSettings* settings, const TCHAR* procname) {
