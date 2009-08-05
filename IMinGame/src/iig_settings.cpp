@@ -38,17 +38,20 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //* \brief Do not check these processes for game modules
 static const TCHAR* defaultBlackList[] = {
 	_T("<unknown>"),
-	_T("RGSC.EXE"),
+	_T("RGSC.EXE"), // rockstar social games club
 	_T("WMPLAYER.EXE"),
 	_T("ITUNES.EXE"),
-	_T("VLC.EXE"),
+	_T("VLC.EXE"), // videolan
 	_T("BSPLAYER.EXE"),
 	_T("IEXPLORE.EXE"),
 	_T("FIREFOX.EXE"),
 	_T("OPERA.EXE"),
 	_T("WINAMP.EXE"),
-	_T("MPLAYERC.EXE"),
+	_T("MPLAYERC.EXE"), // media player classic
+	_T("EXPLORER.EXE"),
 	_T("STEAM.EXE"),
+	_T("SMP.EXE"), // steam media player
+	_T("msnmsgr.exe"), // msn/live messenger
 };
 
 //* \brief Do not check these processes for game modules

@@ -56,6 +56,9 @@ static const TCHAR* tabModulesList[] = {
 	_T("D3D9.DLL"),
 	_T("D3D10.DLL"),
 	_T("D3D11.DLL"),
+	_T("DINPUT.DLL"),
+	_T("DINPUT8.DLL"),
+	//_T("DSOUND.DLL"),
 	_T("OPENGL32.DLL"),
 	NULL
 };
@@ -79,13 +82,21 @@ BOOL CALLBACK EnumWindowsProc( HWND hwnd, LPARAM lParam )
        _tcscmp(szWindowName, _T("")) != 0 &&
        IsWindowVisible(hwnd))
     {
+		BOOL screenSaver = FALSE;
+		if (!gSystemSettings.legacyTimer) {
+			KillTimer(gHwnd, 0);
+		}
+		
+		SystemParametersInfo(SPI_GETSCREENSAVERRUNNING, 0, &screenSaver, 0);
+		if (screenSaver) {
+			gGameProcessId = 0;
+			return FALSE;
+		}
+
         GetWindowText(hwnd, szWindowName, 255);
 		setMsnNowPlaying(gSystemSettings.userMessage, szWindowName, gSystemSettings.asGame, gHwnd);
 		updateWindowText(szWindowName);
 
-		if (!gSystemSettings.legacyTimer) {
-			KillTimer(gHwnd, 0);
-		}
 		return FALSE;
     }
     return TRUE;

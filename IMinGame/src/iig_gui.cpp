@@ -45,7 +45,7 @@ extern DWORD gGameProcessId;
 extern LRESULT WINAPI IMinGameProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam );
 
 #define APP_NAME    _T("IMinGame")
-#define APP_VERSION _T("0.2.2")
+#define APP_VERSION _T("0.2.3")
 
 #define IIG_LANGSTR_MACRO( id, eng, fre ) _T(eng),
 static const TCHAR* engLangStr[] = {

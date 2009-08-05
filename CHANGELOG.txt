@@ -1,3 +1,8 @@
+2009-08-05 version 0.2.3:
+	* Status not updated anymore if screensaver is enabled (avoid 3d screensavers)
+	* default blacklist extended
+	* added dinput.dll to modules list (catch more games)
+
 2009-08-05 version 0.2.2:
 	* Added drag&drop a file into main window to add to whitelist
 	* Added a "Blacklist it" button to add application currently detected to blacklist
