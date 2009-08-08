@@ -76,7 +76,9 @@ int APIENTRY _tWinMain(
 	LoadSettings(&gSystemSettings);
 	SaveSettings(&gSystemSettings);
 	BuildGUI(hInst, &gSystemSettings);
-    ShowWindow(gHwnd, SW_SHOWDEFAULT );
+	if (!_tcsstr(lpCmdLine, _T("/m"))) {
+		ShowWindow(gHwnd, SW_SHOWDEFAULT);
+	}
 
     tnd.cbSize = sizeof(NOTIFYICONDATA);
     tnd.hWnd = gHwnd;
@@ -88,6 +90,7 @@ int APIENTRY _tWinMain(
     Shell_NotifyIcon(NIM_MODIFY,&tnd);
 
 	DragAcceptFiles(gHwnd, TRUE);
+	CoInitialize(NULL);
     
 	if (gSystemSettings.legacyTimer) {
 		SetTimer( gHwnd, 0, gSystemSettings.interval * 1000, (TIMERPROC)NULL );
@@ -140,6 +143,7 @@ int APIENTRY _tWinMain(
 	}
 
 
+	CoUninitialize();
 	ClearMessage();
     SaveSettings(&gSystemSettings);
 

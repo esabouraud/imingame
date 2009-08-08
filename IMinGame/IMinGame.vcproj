@@ -195,6 +195,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\iig_shlnk.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\iig_status.cpp"
 				>
 			</File>
@@ -222,6 +226,10 @@
 			</File>
 			<File
 				RelativePath=".\inc\iig_settings.h"
+				>
+			</File>
+			<File
+				RelativePath=".\inc\iig_shlnk.h"
 				>
 			</File>
 			<File

@@ -4,12 +4,11 @@ Maintenance :
 
 New features ideas :
 	* add GTalk "Music Status" support (is it possible without plugin) ?
-	* handle detection of non directx/opengl games (ex: popcap games)
+	* handle detection of non directx/opengl games (ex: popcap games, no idea how)
 	* update name of game some time after in launches
 	* remove/increase limit on white/black list size
 	* merge new default white/blacklist items into current list
 	* add option to display in-game time
 	* add option to provide steam profile "join game" link (unlikely) ?
 	* add option to disable exit confirmation message
-	* launch on windows startup option in installer (but avoid unnecessary hooking)
 	* right click menu on tray icon (quit, force update)

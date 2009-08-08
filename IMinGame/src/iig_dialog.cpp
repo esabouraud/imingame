@@ -40,6 +40,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "iig_settings.h"
 #include "iig_status.h"
 #include "iig_detect.h"
+#include "iig_shlnk.h"
 
 
 extern HWND gHwnd;
@@ -324,15 +325,26 @@ LRESULT WINAPI IMinGameProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 		{
 			HDROP hDrop = (HDROP)wParam;
 			TCHAR filepath[_MAX_PATH];
+			TCHAR filepath2[_MAX_PATH];
+			BOOL addToList = FALSE;
 			if (DragQueryFile(hDrop, 0, filepath, sizeof(filepath)/sizeof(*filepath))) {
 				TCHAR fileext[_MAX_EXT];
 				_tsplitpath(filepath, NULL, NULL, procname, fileext);
-				if (_tcslen(procname) + _tcslen(fileext) < _MAX_FNAME) {
-					//if (_tcsicmp(fileext, _T("lnk)")) == 0) {
-					//}
-					_tcscat(procname, fileext);
-					_tcscpy(appname, procname);
-					
+				_tcscpy(appname, procname);
+				if (_tcsicmp(fileext, _T(".lnk")) == 0) {
+					if (SUCCEEDED(ResolveIt(hWnd, filepath, filepath2, _MAX_PATH))) {
+						_tcscpy(appname, procname);
+						_tsplitpath(filepath2, NULL, NULL, procname, fileext);
+					}
+				} 
+				if(_tcsicmp(fileext, _T(".exe")) == 0) {
+					if (_tcslen(procname) + _tcslen(fileext) < _MAX_FNAME) {
+						_tcscat(procname, fileext);
+						addToList = TRUE;
+					}
+				}
+
+				if (addToList) {
 					if (DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_WHITELIST), hWnd, WhiteListDlgProc) == IDOK) {
 						RemoveFromBlackList(&gSystemSettings, procname);
 						RemoveFromWhiteList(&gSystemSettings, procname);

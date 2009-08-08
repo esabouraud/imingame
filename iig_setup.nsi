@@ -5,13 +5,13 @@ Name IMinGame
 
 # General Symbol Definitions
 !define REGKEY "SOFTWARE\$(^Name)"
-!define VERSION 0.2.3
+!define REGROOT "SHELL_CONTEXT" 
+!define VERSION 0.2.4
 !define COMPANY "Eric Sabouraud"
 !define URL http://sourceforge.net/projects/imingame/
 
-
 # Persistent language selection
-!define MUI_LANGDLL_REGISTRY_ROOT "HKLM" 
+!define MUI_LANGDLL_REGISTRY_ROOT "${REGROOT}"
 !define MUI_LANGDLL_REGISTRY_KEY "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)"
 !define MUI_LANGDLL_REGISTRY_VALUENAME "Installer Language"
  
@@ -30,7 +30,7 @@ Name IMinGame
 !define MUI_ICON "${NSISDIR}\Contrib\Graphics\Icons\modern-install-colorful.ico"
 !define MUI_WELCOMEFINISHPAGE_BITMAP "IMinGame\res\iig_welcome.bmp"
 !define MUI_FINISHPAGE_NOAUTOCLOSE
-!define MUI_STARTMENUPAGE_REGISTRY_ROOT HKLM
+!define MUI_STARTMENUPAGE_REGISTRY_ROOT "${REGROOT}"
 !define MUI_STARTMENUPAGE_REGISTRY_KEY ${REGKEY}
 !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME StartMenuGroup
 !define MUI_STARTMENUPAGE_DEFAULTFOLDER IMinGame
@@ -53,6 +53,7 @@ Var StartMenuGroup
 !insertmacro MULTIUSER_PAGE_INSTALLMODE
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_STARTMENU Application $StartMenuGroup
+!insertmacro MUI_PAGE_COMPONENTS
 !insertmacro MUI_PAGE_INSTFILES
 !insertmacro MUI_PAGE_FINISH
 !insertmacro MUI_UNPAGE_CONFIRM
@@ -93,6 +94,12 @@ LangString KeepPrefs ${LANG_FRENCH}  "Garder la configuration ?"
 LangString NoRuntime ${LANG_ENGLISH} "Download and install Microsoft Visual C++ 2008 SP1 Redistributable Package (x86) (needed for IMinGame) ?"
 LangString NoRuntime ${LANG_FRENCH} "Télécharger et installer Microsoft Visual C++ 2008 SP1 Redistributable Package (x86) (nécessaire pour IMinGame) ?"
 
+LangString CoreFiles ${LANG_ENGLISH} "Core files"
+LangString CoreFiles ${LANG_FRENCH} "Fichiers principaux"
+
+LangString RunStartup ${LANG_ENGLISH} "Run on start"
+LangString RunStartup ${LANG_FRENCH} "Lancer au démarrage"
+
 # Installer attributes
 OutFile imingame-${VERSION}-setup.exe
 InstallDir IMinGame
@@ -107,11 +114,11 @@ VIAddVersionKey /LANG=${LANG_ENGLISH} CompanyWebsite "${URL}"
 VIAddVersionKey /LANG=${LANG_ENGLISH} FileVersion "${VERSION}"
 VIAddVersionKey /LANG=${LANG_ENGLISH} FileDescription ""
 VIAddVersionKey /LANG=${LANG_ENGLISH} LegalCopyright ""
-InstallDirRegKey HKLM "${REGKEY}" Path
+#InstallDirRegKey ${REGROOT} "${REGKEY}" Path
 ShowUninstDetails show
 
 # Installer sections
-Section -Main SEC0000
+Section "!$(CoreFiles)" SEC0000
     SetOutPath $INSTDIR
     SetOverwrite on
     File Release\IMinGameHook.dll
@@ -122,13 +129,13 @@ Section -Main SEC0000
     File LICENSE-eng.txt
 	File LICENSE-fra.txt
 	File TODO.txt
-    WriteRegStr HKLM "${REGKEY}\Components" Main 1
+    WriteRegStr ${REGROOT}  "${REGKEY}\Components" Main 1
 	WriteINIStr $INSTDIR\presettings.ini "general" lang $(PresetLang)
 
 SectionEnd
 
 Section -post SEC0001
-    WriteRegStr HKLM "${REGKEY}" Path $INSTDIR
+    WriteRegStr ${REGROOT}  "${REGKEY}" Path $INSTDIR
     SetOutPath $INSTDIR
     WriteUninstaller $INSTDIR\uninstall.exe
     !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
@@ -137,24 +144,29 @@ Section -post SEC0001
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\$(^Name).lnk" $INSTDIR\IMinGame.exe
 	CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Readme.lnk" $INSTDIR\$(readmeStr)
     SetOutPath $SMPROGRAMS\$StartMenuGroup
-    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\$(^UninstallLink).lnk" $INSTDIR\uninstall.exe
+    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\$(^UninstallLink).lnk" $INSTDIR\uninstall.exe "/$MultiUser.InstallMode"
     !insertmacro MUI_STARTMENU_WRITE_END
 	SetOutPath $INSTDIR
-    WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" DisplayName "$(^Name)"
-    WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" DisplayVersion "${VERSION}"
-    WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" Publisher "${COMPANY}"
-    WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" URLInfoAbout "${URL}"
-    WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" DisplayIcon $INSTDIR\uninstall.exe
-    WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" UninstallString $INSTDIR\uninstall.exe
-    WriteRegDWORD HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" NoModify 1
-    WriteRegDWORD HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" NoRepair 1
+    WriteRegStr ${REGROOT}  "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" DisplayName "$(^Name)"
+    WriteRegStr ${REGROOT}  "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" DisplayVersion "${VERSION}"
+    WriteRegStr ${REGROOT}  "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" Publisher "${COMPANY}"
+    WriteRegStr ${REGROOT}  "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" URLInfoAbout "${URL}"
+    WriteRegStr ${REGROOT}  "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" DisplayIcon $INSTDIR\uninstall.exe
+    WriteRegStr ${REGROOT}  "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" UninstallString "$INSTDIR\uninstall.exe /$MultiUser.InstallMode"
+    WriteRegDWORD ${REGROOT}  "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" NoModify 1
+    WriteRegDWORD ${REGROOT}  "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" NoRepair 1
 	Call CheckVisualRuntime
+SectionEnd
+
+Section /o $(RunStartup) SEC0002
+	WriteRegStr ${REGROOT}  "${REGKEY}\Components" RunStartup 1
+	WriteRegStr ${REGROOT}  "Software\Microsoft\Windows\CurrentVersion\Run" "IMinGame" "$INSTDIR\IMinGame.exe /m"
 SectionEnd
 
 # Macro for selecting uninstaller sections
 !macro SELECT_UNSECTION SECTION_NAME UNSECTION_ID
     Push $R0
-    ReadRegStr $R0 HKLM "${REGKEY}\Components" "${SECTION_NAME}"
+    ReadRegStr $R0 ${REGROOT} "${REGKEY}\Components" "${SECTION_NAME}"
     StrCmp $R0 1 0 next${UNSECTION_ID}
     !insertmacro SelectSection "${UNSECTION_ID}"
     GoTo done${UNSECTION_ID}
@@ -181,19 +193,19 @@ del_instfiles:
 	Delete /REBOOTOK $INSTDIR\README-eng.txt
     Delete /REBOOTOK $INSTDIR\IMinGame.exe
     Delete /REBOOTOK $INSTDIR\IMinGameHook.dll
-    DeleteRegValue HKLM "${REGKEY}\Components" Main
+    DeleteRegValue ${REGROOT} "${REGKEY}\Components" Main
 SectionEnd
 
 Section -un.post UNSEC0001
-    DeleteRegKey HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)"
+    DeleteRegKey ${REGROOT} "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)"
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\$(^Name).lnk"
 	Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\Readme.lnk"
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\$(^UninstallLink).lnk"
     Delete /REBOOTOK $INSTDIR\uninstall.exe
-    DeleteRegValue HKLM "${REGKEY}" StartMenuGroup
-    DeleteRegValue HKLM "${REGKEY}" Path
-    DeleteRegKey /IfEmpty HKLM "${REGKEY}\Components"
-    DeleteRegKey /IfEmpty HKLM "${REGKEY}"
+    DeleteRegValue ${REGROOT} "${REGKEY}" StartMenuGroup
+    DeleteRegValue ${REGROOT} "${REGKEY}" Path
+    DeleteRegKey /IfEmpty ${REGROOT} "${REGKEY}\Components"
+    DeleteRegKey /IfEmpty ${REGROOT} "${REGKEY}"
     RmDir /REBOOTOK $SMPROGRAMS\$StartMenuGroup
     RmDir /REBOOTOK $INSTDIR
     Push $R0
@@ -201,6 +213,11 @@ Section -un.post UNSEC0001
     StrCmp $R0 ">" no_smgroup
 no_smgroup:
     Pop $R0
+SectionEnd
+
+Section /o un.RunStartup UNSEC0002
+	DeleteRegValue ${REGROOT} "${REGKEY}\Components" RunStartup
+	DeleteRegValue ${REGROOT} "Software\Microsoft\Windows\CurrentVersion\Run" "IMinGame"
 SectionEnd
 
 # Installer functions
@@ -227,9 +244,10 @@ FunctionEnd
 
 # Uninstaller functions
 Function un.onInit
+    !insertmacro MULTIUSER_UNINIT
 	!insertmacro MUI_UNGETLANGUAGE
     !insertmacro MUI_STARTMENU_GETFOLDER Application $StartMenuGroup
-    !insertmacro MULTIUSER_UNINIT
     !insertmacro SELECT_UNSECTION Main ${UNSEC0000}
+	!insertmacro SELECT_UNSECTION RunStartup ${UNSEC0002}
 FunctionEnd
 

@@ -1,7 +1,14 @@
+2009-08-08 version 0.2.4:
+	* Default blacklist extendend
+	* True non-power user install supported (no HKLM key in registry)
+	* Added launch on windows start option in installer
+	* Added command line parameter "/m" to run minimized
+	* Drag&drop of windows links in main window (whitelist) supported
+
 2009-08-05 version 0.2.3:
 	* Status not updated anymore if screensaver is enabled (avoid 3d screensavers)
-	* default blacklist extended
-	* added dinput.dll to modules list (catch more games)
+	* Default blacklist extended
+	* Added dinput.dll to modules list (catch more games)
 
 2009-08-05 version 0.2.2:
 	* Added drag&drop a file into main window to add to whitelist

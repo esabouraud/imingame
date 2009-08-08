@@ -52,6 +52,7 @@ static const TCHAR* defaultBlackList[] = {
 	_T("STEAM.EXE"),
 	_T("SMP.EXE"), // steam media player
 	_T("msnmsgr.exe"), // msn/live messenger
+	_T("nvCplUI.exe"), // nvidia control panel
 };
 
 //* \brief Do not check these processes for game modules
