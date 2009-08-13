@@ -113,10 +113,18 @@ BOOL CALLBACK SettingsDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lPa
 					}
 					break;
 				case ID_BUTTON_BLIST:
-					ShellExecute(NULL, _T("open"), _T("blist.txt"), NULL, NULL, SW_SHOW);
+					{
+						TCHAR filepath[_MAX_PATH];
+						_sntprintf(filepath, sizeof(filepath)/sizeof(*filepath), _T("%s\\blist.txt"), gSystemSettings.path);
+						ShellExecute(NULL, _T("open"), filepath, NULL, NULL, SW_SHOW);
+					}
 					break;
 				case ID_BUTTON_WLIST:
-					ShellExecute(NULL, _T("open"), _T("wlist.txt"), NULL, NULL, SW_SHOW);
+					{
+						TCHAR filepath[_MAX_PATH];
+						_sntprintf(filepath, sizeof(filepath)/sizeof(*filepath), _T("%s\\wlist.txt"), gSystemSettings.path);
+						ShellExecute(NULL, _T("open"), filepath, NULL, NULL, SW_SHOW);
+					}
 					break;
 			}
 			break;

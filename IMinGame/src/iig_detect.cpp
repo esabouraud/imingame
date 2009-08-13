@@ -60,6 +60,7 @@ static const TCHAR* tabModulesList[] = {
 	_T("DINPUT8.DLL"),
 	//_T("DSOUND.DLL"),
 	_T("OPENGL32.DLL"),
+	//_T("STEAM.DLL"),
 	NULL
 };
 

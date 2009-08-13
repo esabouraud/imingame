@@ -46,6 +46,7 @@ struct bwListElt {
 
 typedef struct _SystemSettings
 {
+	TCHAR path[_MAX_PATH];
 	TCHAR userMessage[63];
 	UINT interval;
 	BOOL asGame;

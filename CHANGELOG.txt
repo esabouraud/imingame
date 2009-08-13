@@ -1,5 +1,9 @@
+2009-08-16 version 0.2.5:
+	* Use registry to find install directory, only use current registry fails
+	^ This fixes the "launch on startup" different config files bug 
+
 2009-08-08 version 0.2.4:
-	* Default blacklist extendend
+	* Default blacklist extended
 	* True non-power user install supported (no HKLM key in registry)
 	* Added launch on windows start option in installer
 	* Added command line parameter "/m" to run minimized

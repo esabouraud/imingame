@@ -53,6 +53,7 @@ static const TCHAR* defaultBlackList[] = {
 	_T("SMP.EXE"), // steam media player
 	_T("msnmsgr.exe"), // msn/live messenger
 	_T("nvCplUI.exe"), // nvidia control panel
+	_T("mumble.exe")
 };
 
 //* \brief Do not check these processes for game modules
@@ -76,7 +77,10 @@ struct bwListElt* bwListSearch(const TCHAR* procname, const struct bwListElt lis
 void SaveBlackList(const SystemSettings* settings) {
 	FILE *file = NULL;
 	UINT i = 0;
-	if ((file = _tfopen(_T("blist.txt"), _T("w"))) != NULL) {
+	TCHAR filepath[_MAX_PATH];
+
+	_sntprintf(filepath, sizeof(filepath)/sizeof(*filepath), _T("%s\\blist.txt"), settings->path);
+	if ((file = _tfopen(filepath, _T("w"))) != NULL) {
 		for (i = 0; i < settings->blackListSize; ++i) {
 			_ftprintf(file, _T("%s\n"), settings->blackList[i].procname);
 		}
@@ -87,7 +91,10 @@ void SaveBlackList(const SystemSettings* settings) {
 void SaveWhiteList(const SystemSettings* settings) {
 	FILE *file = NULL;
 	UINT i = 0;
-	if ((file = _tfopen(_T("wlist.txt"), _T("w"))) != NULL) {
+	TCHAR filepath[_MAX_PATH];
+
+	_sntprintf(filepath, sizeof(filepath)/sizeof(*filepath), _T("%s\\wlist.txt"), settings->path);
+	if ((file = _tfopen(filepath, _T("w"))) != NULL) {
 		for (i = 0; i < settings->whiteListSize; ++i) {
 			_ftprintf(file, _T("%s|%s\n"), settings->whiteList[i].procname, settings->whiteList[i].windowName);
 		}
@@ -97,9 +104,12 @@ void SaveWhiteList(const SystemSettings* settings) {
 
 void LoadWhiteList(SystemSettings* settings) {
 	FILE *file = NULL;
+	TCHAR filepath[_MAX_PATH];
+
 	// Read whitelist, restore default if missing
 	settings->whiteListSize = 0;
-	if ((file = _tfopen(_T("wlist.txt"), _T("r"))) != NULL) {
+	_sntprintf(filepath, sizeof(filepath)/sizeof(*filepath), _T("%s\\wlist.txt"), settings->path);
+	if ((file = _tfopen(filepath, _T("r"))) != NULL) {
 		while (settings->whiteListSize < sizeof(settings->whiteList)/sizeof(*settings->whiteList)) {
 			if (_ftscanf(file, _T("%255[^|]|%255[^\n]\n"), settings->whiteList[settings->whiteListSize].procname, settings->whiteList[settings->whiteListSize].windowName) == 2) {
 				++settings->whiteListSize;
@@ -121,9 +131,12 @@ void LoadWhiteList(SystemSettings* settings) {
 
 void LoadBlackList(SystemSettings* settings) {
 	FILE *file = NULL;
+	TCHAR filepath[_MAX_PATH];
+
 	// Read blacklist, restore default if missing
 	settings->blackListSize = 0;
-	if ((file = _tfopen(_T("blist.txt"), _T("r"))) != NULL) {
+	_sntprintf(filepath, sizeof(filepath)/sizeof(*filepath), _T("%s\\blist.txt"), settings->path);
+	if ((file = _tfopen(filepath, _T("r"))) != NULL) {
 		while (settings->blackListSize < sizeof(settings->blackList)/sizeof(*settings->blackList)) {
 			if (_ftscanf(file, _T("%255[^\n]\n"), settings->blackList[settings->blackListSize].procname) == 1) {
 				++settings->blackListSize;
@@ -188,7 +201,10 @@ void SaveSettings(const SystemSettings* settings)
 {
 	FILE *file = NULL;
 	UINT i = 0;
-	if ((file = _tfopen(_T("settings.ini"), _T("w"))) != NULL) {
+	TCHAR filepath[_MAX_PATH];
+
+	_sntprintf(filepath, sizeof(filepath)/sizeof(*filepath), _T("%s\\settings.ini"), settings->path);
+	if ((file = _tfopen(filepath, _T("w"))) != NULL) {
 		_ftprintf(file, _T("[general]\nuserMessage=%s\ninterval=%u\nasGame=%d\nlegacyTimer=%d\nlang=%u\n"),
 			settings->userMessage, settings->interval, settings->asGame, settings->legacyTimer, settings->lang);
 		fclose(file);
@@ -204,9 +220,29 @@ void LoadSettings(SystemSettings* settings)
 	FILE *file = NULL;
 	BOOL loadSuccess = FALSE;
 	UINT lang = 0;
+	TCHAR filepath[_MAX_PATH];
+	DWORD pathlen = sizeof(settings->path);
+	HKEY hkey = NULL;
+
+	memset(settings->path, 0, pathlen);
+
+	// Try and read installation directory from registry, use current directory if it fails
+	if (ERROR_SUCCESS != RegOpenKeyEx(HKEY_CURRENT_USER, _T("Software\\IMinGame"), 0, KEY_READ, &hkey)) {
+		if (ERROR_SUCCESS != RegOpenKeyEx(HKEY_LOCAL_MACHINE, _T("Software\\IMinGame"), 0, KEY_READ, &hkey)) {
+			hkey = NULL;
+		}
+	}
+
+	if (hkey) {
+		if (ERROR_SUCCESS != RegQueryValueEx(hkey, _T("Path"), NULL, NULL, (LPBYTE)settings->path, &pathlen)) {
+			_sntprintf(settings->path, sizeof(settings->path)/sizeof(*settings->path), _T("."));
+		}
+		RegCloseKey(hkey);
+	}
 
 	// Read settings file if present
-	if ((file = _tfopen(_T("settings.ini"), _T("r"))) != NULL) {
+	_sntprintf(filepath, sizeof(filepath)/sizeof(*filepath), _T("%s\\settings.ini"), settings->path);
+	if ((file = _tfopen(filepath, _T("r"))) != NULL) {
 		// This part could be replaced with GetPrivateProfileSection/GetPrivateProfileString
 		loadSuccess = _ftscanf(file, _T("[general]\nuserMessage=%62[^\n]\ninterval=%u\nasGame=%d\nlegacyTimer=%d\nlang=%u\n"),
 			&settings->userMessage, &settings->interval, &settings->asGame, &settings->legacyTimer, &settings->lang) == 5;
@@ -214,7 +250,8 @@ void LoadSettings(SystemSettings* settings)
 	} 
 
 	// Fallback on pre-settings file (created by installer) if settings file is missing or corrupted
-	if (!loadSuccess && (file = _tfopen(_T("presettings.ini"), _T("r"))) != NULL) {
+	_sntprintf(filepath, sizeof(filepath)/sizeof(*filepath), _T("%s\\presettings.ini"), settings->path);
+	if (!loadSuccess && (file = _tfopen(filepath, _T("r"))) != NULL) {
 		_ftscanf(file, _T("[general]\nlang=%u\n"), &lang);
 		fclose(file);
 	}
