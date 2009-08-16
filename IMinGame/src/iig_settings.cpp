@@ -53,7 +53,8 @@ static const TCHAR* defaultBlackList[] = {
 	_T("SMP.EXE"), // steam media player
 	_T("msnmsgr.exe"), // msn/live messenger
 	_T("nvCplUI.exe"), // nvidia control panel
-	_T("mumble.exe")
+	_T("mumble.exe"),
+	_T("GameOverlayUI.exe") // steam in-game overlay
 };
 
 //* \brief Do not check these processes for game modules
@@ -72,6 +73,20 @@ static int bwListCompareKey(const void* key, const void* elt) {
 
 struct bwListElt* bwListSearch(const TCHAR* procname, const struct bwListElt list[], int listSize) {
 	return (struct bwListElt*)bsearch(procname, list, listSize, sizeof(*list), bwListCompareKey);
+}
+
+static void RemoveDoublesFromBWList(struct bwListElt list[], UINT* pListSize) {
+	UINT i = 0;
+	for (i = 0; *pListSize > 1 && i < *pListSize - 1;) {
+		if (_tcsicmp(list[i].procname, list[i+1].procname) == 0) {
+			if (i < *pListSize - 2) {
+				memmove(&list[i+1], &list[i+2], (*pListSize - (i+2)) * sizeof(*list));
+			}
+			(*pListSize)--;
+		} else {
+			++i;
+		}
+	}
 }
 
 void SaveBlackList(const SystemSettings* settings) {
@@ -127,6 +142,7 @@ void LoadWhiteList(SystemSettings* settings) {
 		}
 	}
 	qsort(settings->whiteList, settings->whiteListSize, sizeof(*settings->whiteList), bwListCompare);
+	RemoveDoublesFromBWList(settings->whiteList, &settings->whiteListSize);
 }
 
 void LoadBlackList(SystemSettings* settings) {
@@ -145,14 +161,17 @@ void LoadBlackList(SystemSettings* settings) {
 			}
 		}
 		fclose(file);
-	} else {
-		while (settings->blackListSize < sizeof(defaultBlackList)/sizeof(*defaultBlackList)
-			&& settings->blackListSize < sizeof(settings->blackList)/sizeof(*settings->blackList)) {
-			_tcsncpy(settings->blackList[settings->blackListSize].procname, defaultBlackList[settings->blackListSize], 255);
-			++settings->blackListSize;
-		}
 	}
+
+	// Always add default blacklist in order to propagate updates
+	while (settings->blackListSize < sizeof(defaultBlackList)/sizeof(*defaultBlackList)
+		&& settings->blackListSize < sizeof(settings->blackList)/sizeof(*settings->blackList)) {
+		_tcsncpy(settings->blackList[settings->blackListSize].procname, defaultBlackList[settings->blackListSize], 255);
+		++settings->blackListSize;
+	}
+
 	qsort(settings->blackList, settings->blackListSize, sizeof(*settings->blackList), bwListCompare);
+	RemoveDoublesFromBWList(settings->blackList, &settings->blackListSize);
 }
 
 static void AddToBWList(struct bwListElt list[], UINT listCapacity, UINT* pListSize, const TCHAR* procname, const TCHAR* windowName) {
@@ -166,7 +185,7 @@ static void AddToBWList(struct bwListElt list[], UINT listCapacity, UINT* pListS
 	}
 }
 
-static void RemoveFromBWList(struct bwListElt list[], UINT listCapacity, UINT* pListSize, const TCHAR* procname) {
+static void RemoveFromBWList(struct bwListElt list[], UINT* pListSize, const TCHAR* procname) {
 	struct bwListElt* elt = bwListSearch(procname, list, *pListSize);
 	if (elt) {
 		int len = &list[*pListSize] - elt;
@@ -183,7 +202,7 @@ void AddToBlackList(SystemSettings* settings, const TCHAR* procname) {
 }
 
 void RemoveFromBlackList(SystemSettings* settings, const TCHAR* procname) {
-	RemoveFromBWList(settings->blackList, sizeof(settings->blackList)/sizeof(*settings->blackList), &settings->blackListSize, procname);
+	RemoveFromBWList(settings->blackList, &settings->blackListSize, procname);
 	SaveBlackList(settings);
 }
 
@@ -193,7 +212,7 @@ void AddToWhiteList(SystemSettings* settings, const TCHAR* procname, const TCHAR
 }
 
 void RemoveFromWhiteList(SystemSettings* settings, const TCHAR* procname) {
-	RemoveFromBWList(settings->whiteList, sizeof(settings->whiteList)/sizeof(*settings->whiteList), &settings->whiteListSize, procname);
+	RemoveFromBWList(settings->whiteList, &settings->whiteListSize, procname);
 	SaveWhiteList(settings);
 }
 

@@ -49,6 +49,8 @@ extern HWND gHwnd;
 extern SystemSettings gSystemSettings;
 extern DWORD gGameProcessId;
 
+//* \brief Used to check each game name twice at a certain interval */
+static BOOL retryGetName = TRUE;
 
 //* \brief Processes using one of these modules are considered as games
 static const TCHAR* tabModulesList[] = {
@@ -85,7 +87,12 @@ BOOL CALLBACK EnumWindowsProc( HWND hwnd, LPARAM lParam )
     {
 		BOOL screenSaver = FALSE;
 		if (!gSystemSettings.legacyTimer) {
-			KillTimer(gHwnd, 0);
+			if (retryGetName) {
+				SetTimer(gHwnd, 0, 60000, NULL);
+				retryGetName = FALSE;
+			} else {
+				KillTimer(gHwnd, 0);
+			}
 		}
 		
 		SystemParametersInfo(SPI_GETSCREENSAVERRUNNING, 0, &screenSaver, 0);
@@ -173,6 +180,7 @@ BOOL TryProcess(DWORD processId) {
 								EnumWindows(EnumWindowsProc, processId);
 							} else {
 								SetTimer(gHwnd, 0, 5000, NULL);
+								retryGetName = TRUE;
 							}
 							gGameProcessId = processId;
 							isPlaying = TRUE;
