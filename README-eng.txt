@@ -27,13 +27,13 @@ It should work with other IM software implementing the 'Send "Now Playing"
 information to MSN Messenger' interface, like Pidgin (http://www.pidgin.im)
 with the musictracker plugin (http://code.google.com/p/pidgin-musictracker).
 
-* Black/White lists
+* Black/White list
 
 Applications can be blacklisted or whitelisted based on their process name.
 The application currently detected can be blacklisted by pressing the
 "Blacklist it" button. Any application (not just games) can be detected 
 if it is whitelisted, which is accomplished by drag&dropping its exe file
-into the main window.
+or shortcut into the main window.
 
 Both can be edited from the settings dialog. Once it is done, save the file
 THEN click the apply button.

@@ -74,7 +74,7 @@ IIG_LANGSTR_MACRO(EXITLBL,\
 	"Quitter")
 
 IIG_LANGSTR_MACRO(EXITMBOX,\
-	"This will stop showing games in your MSN status, are you sure?",\
+	"This will stop showing games in your MSN status, are you sure ?",\
 	"Votre statut MSN ne sera plus mis à jour avec vos jeux, êtes vous sûr ?")
 
 IIG_LANGSTR_MACRO(BLACKLISTCONFIRM,\

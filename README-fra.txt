@@ -1,7 +1,7 @@
     
 		IMinGame
 
-	Annoncez à vos contacts MSN à quel jeux vous jouez
+	Annoncez à vos contacts MSN à quels jeux vous jouez
 
 	http://imingame.sourceforge.net/
 	
@@ -29,18 +29,18 @@ supportant l'interface d'envoi d'information musicale à MSN Messenger,
 comme Pidgin (http://www.pidgin.im) avec le plugin musictracker
 (http://code.google.com/p/pidgin-musictracker).
 
-* Listes noire/blanche
+* Liste noire/blanche
 
 Les applications peuvent être mises en liste noire ou blanche, identifiées
 par leur nom de processus. Une application détectée peut être mise en liste
 noire en cliquant sur le bouton "En liste noire". N'importe quelle application
 peut être détectée grâce à la liste blanche (pas seulement les jeux), pour
-cela il faut glisser&déposer le fichier exe associé dans la fenêtre principale.
+cela il faut glisser&déposer le fichier exe associé ou un raccorci dans
+la fenêtre principale.
 
-Les deux peuvent être modifiées à partir de l'écran d'options. Une fois
-les modifications effectuées, sauver le fichier et ENSUITE appuyer sur le bouton
-Appliquer. De plus, IMinGame peut être utilisé avec n'importe quelle
-application grâce à la liste blanche, pas seulement les jeux.
+Les deux listes peuvent également être modifiées manuellement à partir de l'écran
+d'options. Une fois les modifications effectuées, sauver le fichier et ENSUITE
+appuyer sur le bouton Appliquer.
 
 Le format de la liste blanche est (sans <>):
 <nom du processus>|<nom envoyé à MSN>

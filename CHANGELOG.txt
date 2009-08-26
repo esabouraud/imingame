@@ -1,8 +1,8 @@
 2009-08-17 version 0.2.5:
-	* Use registry to find install directory, only use current registry fails
+	* Use registry to find install directory, only use current if registry fails
 		^ Fixes the "launch on startup" different config files bug 
 	* Check game name twice on start, and a minute after start
-		^ Helps with splashscreens and such
+		^ Helps with splashscreens and intro videos
 	* Default blacklist elements always reloaded
 		^ Allows simple propagation of new default items
 	* Black/White lists checked for duplicates
