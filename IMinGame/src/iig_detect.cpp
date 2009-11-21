@@ -57,6 +57,7 @@ static const TCHAR* tabModulesList[] = {
 	_T("D3D8.DLL"),
 	_T("D3D9.DLL"),
 	_T("D3D10.DLL"),
+	_T("D3D10_1.DLL"),
 	_T("D3D11.DLL"),
 	_T("DINPUT.DLL"),
 	_T("DINPUT8.DLL"),

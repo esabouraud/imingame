@@ -1,7 +1,11 @@
+2009-11-21 version 0.2.6:
+	* Add D3D10_1.DLL to game detection dll list
+	* Fix some typos
+
 2009-08-17 version 0.2.5:
 	* Use registry to find install directory, only use current if registry fails
 		^ Fixes the "launch on startup" different config files bug 
-	* Check game name twice on start, and a minute after start
+	* Check game name twice : on start, and a minute after start
 		^ Helps with splashscreens and intro videos
 	* Default blacklist elements always reloaded
 		^ Allows simple propagation of new default items
