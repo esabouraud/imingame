@@ -244,6 +244,7 @@ void LoadSettings(SystemSettings* settings)
 	HKEY hkey = NULL;
 
 	memset(settings->path, 0, pathlen);
+	_sntprintf(settings->path, sizeof(settings->path)/sizeof(*settings->path), _T("."));
 
 	// Try and read installation directory from registry, use current directory if it fails
 	if (ERROR_SUCCESS != RegOpenKeyEx(HKEY_CURRENT_USER, _T("Software\\IMinGame"), 0, KEY_READ, &hkey)) {
