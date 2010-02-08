@@ -1,3 +1,6 @@
+2010-02-08 version 0.2.7:
+	* Now works with current directory if no registry key found (installer no used)
+
 2009-11-21 version 0.2.6:
 	* Add D3D10_1.DLL to game detection dll list
 	* Fix some typos
