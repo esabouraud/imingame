@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2009, Eric Sabouraud <eric.sabouraud@gmail.com>
+Copyright (C) 2009-2010, Eric Sabouraud <eric.sabouraud@gmail.com>
 Copyright (C) 2008-2009, Pier Castonguay <dunge2@yahoo.com>
 
 All rights reserved.
@@ -13,7 +13,7 @@ are met:
 - Redistributions in binary form must reproduce the above copyright notice,
   this list of conditions and the following disclaimer in the documentation
   and/or other materials provided with the distribution.
-- Neither the name of the Mumble Developers nor the names of its
+- Neither the name of the IMinGame Developers nor the names of its
   contributors may be used to endorse or promote products derived from this
   software without specific prior written permission.
 
@@ -37,6 +37,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <windows.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 HRESULT ResolveIt(HWND hwnd, const TCHAR* lpszLinkFile, TCHAR* lpszPath, size_t iPathBufferSize);
+
+#ifdef __cplusplus
+};
+#endif
 
 #endif

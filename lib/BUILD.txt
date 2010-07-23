@@ -1,0 +1,6 @@
+The lib directory contains IMinGame dependencies, download and unpack the source of : 
+	- cUrl 7.21.0 (http://curl.haxx.se/)
+	- eXpat 2.0.1 (http://expat.sourceforge.net/)
+
+Import curl-7.21.0\vc6curl.dsw in VS2008 and build vc6curl.sln solution.
+Import expat-2.0.1\expat.dsw in VS2008 and build generated expat.sln solution.

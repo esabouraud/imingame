@@ -1,4 +1,4 @@
-Copyright (C) 2009, Eric Sabouraud <eric.sabouraud@gmail.com>
+Copyright (C) 2009-2010, Eric Sabouraud <eric.sabouraud@gmail.com>
 Copyright (C) 2008-2009, Pier Castonguay <dunge2@yahoo.com>
 
 Tous droits réservés.
@@ -11,7 +11,12 @@ suivantes soient respectées :
   copyright ci-dessus, cette liste de conditions et la renonciation suivante.
 - Les redistributions sous forme binaire doivent reproduire l'indication de
   copyright ci-dessus, cette liste de conditions et la renonciation suivante
-  dans la documentation et/ou les autres accessoires fournis avec la distribution.
+  dans la documentation et/ou les autres accessoires fournis avec la
+  distribution.
+- Ni les noms des développeurs de IMinGame ni les noms des participants ne
+  peuvent être employés pour approuver ou promouvoir les produits dérivés de ce
+  logiciel sans accord écrit préalable.
+
 
 CE LOGICIEL EST FOURNI "TEL QUEL" ET TOUTES LES GARANTIES EXPLICITES OU
 IMPLICITES, Y COMPRIS, MAIS NON LIMITÉES A CELLES-CI, LES GARANTIES

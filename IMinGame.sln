@@ -2,8 +2,13 @@
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual C++ Express 2008
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IMinGame", "IMinGame\IMinGame.vcproj", "{B3539C81-EE98-45B7-8BEB-29B9B575F0A8}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C6F5A95A-7DAF-43F5-8362-BF38162F59EE} = {C6F5A95A-7DAF-43F5-8362-BF38162F59EE}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IMinGameHook", "IMinGameHook\IMinGameHook.vcproj", "{7D8CB4C1-D4FF-4656-831D-A4A7A8674D20}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IMinGameCppLib", "IMinGameCppLib\IMinGameCppLib.vcproj", "{C6F5A95A-7DAF-43F5-8362-BF38162F59EE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,6 +24,10 @@ Global
 		{7D8CB4C1-D4FF-4656-831D-A4A7A8674D20}.Debug|Win32.Build.0 = Debug|Win32
 		{7D8CB4C1-D4FF-4656-831D-A4A7A8674D20}.Release|Win32.ActiveCfg = Release|Win32
 		{7D8CB4C1-D4FF-4656-831D-A4A7A8674D20}.Release|Win32.Build.0 = Release|Win32
+		{C6F5A95A-7DAF-43F5-8362-BF38162F59EE}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C6F5A95A-7DAF-43F5-8362-BF38162F59EE}.Debug|Win32.Build.0 = Debug|Win32
+		{C6F5A95A-7DAF-43F5-8362-BF38162F59EE}.Release|Win32.ActiveCfg = Release|Win32
+		{C6F5A95A-7DAF-43F5-8362-BF38162F59EE}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
