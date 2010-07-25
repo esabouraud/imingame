@@ -224,8 +224,9 @@ void SaveSettings(const SystemSettings* settings)
 
 	_sntprintf(filepath, sizeof(filepath)/sizeof(*filepath), _T("%s\\settings.ini"), settings->path);
 	if ((file = _tfopen(filepath, _T("w"))) != NULL) {
-		_ftprintf(file, _T("[general]\nuserMessage=%s\ninterval=%u\nasGame=%d\nlegacyTimer=%d\nlang=%u\n"),
-			settings->userMessage, settings->interval, settings->asGame, settings->legacyTimer, settings->lang);
+		_ftprintf(file, _T("[general]\nuserMessage=%s\ninterval=%u\nasGame=%d\nlegacyTimer=%d\nlang=%u\n[steam]\nsteamProfileEnabled=%d\nsteamProfileUrl=%s\n"),
+			settings->userMessage, settings->interval, settings->asGame, settings->legacyTimer, settings->lang, settings->steamProfileEnabled,
+			settings->steamProfileUrl);
 		fclose(file);
     }
 
@@ -266,6 +267,13 @@ void LoadSettings(SystemSettings* settings)
 		// This part could be replaced with GetPrivateProfileSection/GetPrivateProfileString
 		loadSuccess = _ftscanf(file, _T("[general]\nuserMessage=%62[^\n]\ninterval=%u\nasGame=%d\nlegacyTimer=%d\nlang=%u\n"),
 			&settings->userMessage, &settings->interval, &settings->asGame, &settings->legacyTimer, &settings->lang) == 5;
+		if (loadSuccess && _ftscanf(file, _T("[steam]\nsteamProfileEnabled=%d\nsteamProfileUrl=%255[^\n]\n"), &settings->steamProfileEnabled,
+			&settings->steamProfileUrl) != 2) {
+				// New optional settings of v0.3.0 : ensure upward compatibility
+				settings->steamProfileEnabled = FALSE;
+				memset(settings->steamProfileUrl, 0, sizeof(settings->steamProfileUrl));
+		}
+		
 		fclose(file);
 	} 
 
@@ -283,6 +291,8 @@ void LoadSettings(SystemSettings* settings)
 		settings->legacyTimer = FALSE;
 		settings->lang = lang;
 		_tcscpy(settings->userMessage, getLangString(settings->lang, IIG_LANGSTR_USERMSGDEF));
+		settings->steamProfileEnabled = FALSE;
+		memset(settings->steamProfileUrl, 0, sizeof(settings->steamProfileUrl));
      }
 
 	LoadWhiteList(settings);

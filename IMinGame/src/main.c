@@ -70,8 +70,10 @@ int APIENTRY _tWinMain(
 	HookUninstaller uninstallHook = NULL;
 
     hMutex = CreateMutex(NULL, TRUE, _T("NOWPLAYINGMUTEX"));
-    if(GetLastError() == ERROR_ALREADY_EXISTS)
+	if(GetLastError() == ERROR_ALREADY_EXISTS) {
+		MessageBox(gHwnd, _T("IMinGame is already running"), _T("Error"), MB_OK | MB_ICONEXCLAMATION);
         return 0;
+	}
 
 	LoadSettings(&gSystemSettings);
 	SaveSettings(&gSystemSettings);

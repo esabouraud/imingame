@@ -18,6 +18,10 @@ IMinGame is based on Pier Castonguay's NowPlayingGames v1.13
 	or
 	Microsoft Visual C++ Express 2008 SP1 to build from source
 
+* Dependencies :
+	libcurl - the multiprotocol file transfer library  (http://curl.haxx.se/)
+	the Expat XML Parser (http://expat.sourceforge.net/)
+	
 * Using IMinGame
 
 Once run, IMinGame will start updating your MSN "Now Playing" (or "Show
@@ -47,3 +51,9 @@ The format for black list file is (without <>) :
 <process name>
 <process name>
 ...
+
+* Steam integration
+
+IMinGame can fetch public user data on the steamcommunity.com website. If this
+feature is enabled, when a steam game is run the status message will be based
+on the current steam status.

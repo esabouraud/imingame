@@ -41,8 +41,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="inc;res;..\IMinGameCppLib\inc"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS"
+				AdditionalIncludeDirectories="inc;res;..\IMinGameCppLib\inc;..\lib\curl-7.21.0\include;..\lib\expat-2.0.1\lib"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;;CURL_STATICLIB;XML_STATIC"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -62,9 +62,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Psapi.lib"
+				AdditionalDependencies="Psapi.lib libcurld.lib libexpatMT.lib ws2_32.lib wldap32.lib"
 				Version=""
 				LinkIncremental="2"
+				AdditionalLibraryDirectories="..\lib\curl-7.21.0\lib\LIB-Debug; ..\lib\expat-2.0.1\win32\bin\Debug"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				TargetMachine="1"
@@ -118,8 +119,8 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="inc;res;..\IMinGameCppLib\inc"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS"
+				AdditionalIncludeDirectories="inc;res;..\IMinGameCppLib\inc;..\lib\curl-7.21.0\include;..\lib\expat-2.0.1\lib"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;CURL_STATICLIB;XML_STATIC"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
@@ -138,9 +139,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Psapi.lib"
+				AdditionalDependencies="Psapi.lib  libcurl.lib libexpatMT.lib ws2_32.lib wldap32.lib"
 				Version=""
 				LinkIncremental="1"
+				AdditionalLibraryDirectories="..\lib\curl-7.21.0\lib\LIB-Release; ..\lib\expat-2.0.1\win32\bin\Release"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
@@ -199,6 +201,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\iig_steam.c"
+				>
+			</File>
+			<File
 				RelativePath=".\src\main.c"
 				>
 			</File>
@@ -226,6 +232,10 @@
 			</File>
 			<File
 				RelativePath=".\inc\iig_status.h"
+				>
+			</File>
+			<File
+				RelativePath=".\inc\iig_steam.h"
 				>
 			</File>
 			<File

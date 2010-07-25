@@ -137,6 +137,18 @@ IIG_LANGSTR_MACRO(EDITWLISTLBL,\
 	"Edit whitelist",\
 	"Modifier la liste blanche")
 
+IIG_LANGSTR_MACRO(STEAMLANG,\
+	"english",\
+	"french")
+
+IIG_LANGSTR_MACRO(STEAMSERV,\
+	" on ",\
+	" sur ")
+
+IIG_LANGSTR_MACRO(STEAMSTR,\
+	" (Steam) ",\
+	" (Steam) ")
+
 // Keep in last position !
 IIG_LANGSTR_MACRO(ENDLANGSTR,\
 	"No language string",\

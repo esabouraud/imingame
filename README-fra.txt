@@ -19,6 +19,10 @@ license BSD.
 	or
 	Microsoft Visual C++ Express 2008 SP1 pour compiler
 
+* Dépendances :
+	libcurl - the multiprotocol file transfer library  (http://curl.haxx.se/)
+	the Expat XML Parser (http://expat.sourceforge.net/)
+	
 * Utiliser IMinGame
 
 Une fois démarré, IMinGame met à jour votre statut MSN "Je suis en train
@@ -35,7 +39,7 @@ Les applications peuvent être mises en liste noire ou blanche, identifiées
 par leur nom de processus. Une application détectée peut être mise en liste
 noire en cliquant sur le bouton "En liste noire". N'importe quelle application
 peut être détectée grâce à la liste blanche (pas seulement les jeux), pour
-cela il faut glisser&déposer le fichier exe associé ou un raccorci dans
+cela il faut glisser&déposer le fichier exe associé ou un raccourci dans
 la fenêtre principale.
 
 Les deux listes peuvent également être modifiées manuellement à partir de l'écran
@@ -52,3 +56,8 @@ Le format de la liste noire est (sans <>):
 <nom du processus>
 ...
 
+* Intégration Steam
+
+IMinGame peut récupérer les données publiques d'un utilisateur sur le site web
+steamcommunity.com. Si cette fonctionnalité est activée, lorsqu'un jeu steam
+est lancé le message de statut sera basé sur le statut steam actuel.

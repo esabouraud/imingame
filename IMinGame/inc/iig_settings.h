@@ -58,6 +58,9 @@ typedef struct _SystemSettings
 
 	struct bwListElt blackList[100];
 	UINT blackListSize;
+
+	BOOL steamProfileEnabled;
+	TCHAR steamProfileUrl[256];
 } SystemSettings; 
 
 extern void SaveSettings(const SystemSettings* settings);

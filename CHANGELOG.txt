@@ -1,9 +1,17 @@
+2010-07-2x version 0.3.0:
+	* Steam web integration (game name and server playing played on)
+		^ Fetch steamcommunity xml stream with libcurl and parse it with expat
+	* C an C++ code separated
+		^ Application actually almost entirely written in C
+	* Fix installer requiring Power user rights
+	
 2010-02-08 version 0.2.7:
-	* Now works with current directory if no registry key found (installer no used)
+	* Now works with current directory if no registry key found (installer not used)
+		^Allows installer-less binary releases.
 
 2009-11-21 version 0.2.6:
 	* Add D3D10_1.DLL to game detection dll list
-	* Fix some typos
+	* Fixed some typos
 
 2009-08-17 version 0.2.5:
 	* Use registry to find install directory, only use current if registry fails

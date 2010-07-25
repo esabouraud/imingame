@@ -44,6 +44,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "iig_gui.h"
 #include "iig_settings.h"
 #include "iig_status.h"
+#include "iig_steam.h"
 
 extern HWND gHwnd;
 extern SystemSettings gSystemSettings;
@@ -51,6 +52,7 @@ extern DWORD gGameProcessId;
 
 //* \brief Used to check each game name twice at a certain interval */
 static BOOL retryGetName = TRUE;
+static BOOL isSteamGame = FALSE;
 
 //* \brief Processes using one of these modules are considered as games
 static const TCHAR* tabModulesList[] = {
@@ -78,6 +80,7 @@ BOOL CALLBACK EnumWindowsProc( HWND hwnd, LPARAM lParam )
 {
     TCHAR szWindowName[255] = _T("<unknown>");
     DWORD processID;
+	SteamInGameInfo steamInfo;
 
     GetWindowThreadProcessId(hwnd, &processID);
     GetWindowText(hwnd, szWindowName, 255);
@@ -88,7 +91,12 @@ BOOL CALLBACK EnumWindowsProc( HWND hwnd, LPARAM lParam )
     {
 		BOOL screenSaver = FALSE;
 		if (!gSystemSettings.legacyTimer) {
-			if (retryGetName) {
+			
+			if (isSteamGame && gSystemSettings.steamProfileEnabled) {
+				// get steam games online state every 10 minutes
+				SetTimer(gHwnd, 0, 600000, NULL);
+			} else if (retryGetName) {
+				// retry to get standard game name after 1 minute (avoid splashscreen issues)
 				SetTimer(gHwnd, 0, 60000, NULL);
 				retryGetName = FALSE;
 			} else {
@@ -102,7 +110,21 @@ BOOL CALLBACK EnumWindowsProc( HWND hwnd, LPARAM lParam )
 			return FALSE;
 		}
 
-        GetWindowText(hwnd, szWindowName, 255);
+		if (isSteamGame && gSystemSettings.steamProfileEnabled) {
+			//TODO handle error
+			getSteamProfileInfo(gSystemSettings.steamProfileUrl, getLangString(gSystemSettings.lang, IIG_LANGSTR_STEAMLANG), &steamInfo);			
+			if (steamInfo.gameName.found) {
+				_tcscpy(szWindowName, _T(""));
+				_tcsncat(szWindowName, steamInfo.gameName.string, sizeof(szWindowName)/sizeof(szWindowName[0]));
+				_tcsncat(szWindowName, getLangString(gSystemSettings.lang, IIG_LANGSTR_STEAMSTR), sizeof(szWindowName)/sizeof(szWindowName[0] - _tcslen(szWindowName)));
+				if (steamInfo.inGameServerIP.found) {
+					_tcsncat(szWindowName, getLangString(gSystemSettings.lang, IIG_LANGSTR_STEAMSERV), sizeof(szWindowName)/sizeof(szWindowName[0] - _tcslen(szWindowName)));
+					_tcsncat(szWindowName, steamInfo.inGameServerIP.string, sizeof(szWindowName)/sizeof(szWindowName[0] - _tcslen(szWindowName)));
+				}
+			}
+		} else {
+			GetWindowText(hwnd, szWindowName, 255);
+		}
 		setMsnNowPlaying(gSystemSettings.userMessage, szWindowName, gSystemSettings.asGame, gHwnd);
 		updateWindowText(szWindowName);
 
@@ -167,26 +189,29 @@ BOOL TryProcess(DWORD processId) {
 					// Process is not blacklisted, check its loaded modules
 					BOOL hasModuleLoaded = FALSE;
 					UINT j = 0, k = 0;
+					BOOL isSteamLoaded = FALSE;
 					cProcessesModules = cbNeeded / sizeof(HMODULE);
-					for (k = 1; k < cProcessesModules && !hasModuleLoaded; ++k) {
+					for (k = 1; (!hasModuleLoaded || (gSystemSettings.steamProfileEnabled && !isSteamLoaded)) && k < cProcessesModules; ++k) {
 						GetModuleBaseName( hProcess, hMod[k], szModuleName, sizeof(szModuleName)/sizeof(TCHAR) );
-						for (j = 0; tabModulesList[j] != NULL; ++j) {
+						for (j = 0; !hasModuleLoaded && tabModulesList[j] != NULL; ++j) {
 							if (_tcsicmp(szModuleName, tabModulesList[j]) == 0) {
 								hasModuleLoaded = TRUE;
-								break;
 							}
 						}
-						if(hasModuleLoaded) {
-							if (gSystemSettings.legacyTimer) {
-								EnumWindows(EnumWindowsProc, processId);
-							} else {
-								SetTimer(gHwnd, 0, 5000, NULL);
-								retryGetName = TRUE;
-							}
-							gGameProcessId = processId;
-							isPlaying = TRUE;
-							break;
+						if (gSystemSettings.steamProfileEnabled &&!isSteamLoaded && _tcsicmp(szModuleName, _T("STEAM.DLL")) == 0) {
+							isSteamLoaded = TRUE;
 						}
+					}
+					if(hasModuleLoaded) {
+						isSteamGame = isSteamLoaded;
+						if (gSystemSettings.legacyTimer) {
+							EnumWindows(EnumWindowsProc, processId);
+						} else {
+							SetTimer(gHwnd, 0, 5000, NULL);
+							retryGetName = TRUE;
+						}
+						gGameProcessId = processId;
+						isPlaying = TRUE;
 					}
 				}
 			}
