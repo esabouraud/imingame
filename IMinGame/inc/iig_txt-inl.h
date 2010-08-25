@@ -149,6 +149,18 @@ IIG_LANGSTR_MACRO(STEAMSTR,\
 	" (Steam) ",\
 	" (Steam) ")
 
+IIG_LANGSTR_MACRO(STEAMINTEG,\
+	"Steam Integration",\
+	"Intégration Steam")
+
+IIG_LANGSTR_MACRO(STEAMENABLE,\
+	"Enable",\
+	"Activer")
+
+IIG_LANGSTR_MACRO(STEAMURL,\
+	"Profile URL",\
+	"URL du profil")
+
 // Keep in last position !
 IIG_LANGSTR_MACRO(ENDLANGSTR,\
 	"No language string",\

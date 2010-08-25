@@ -29,6 +29,9 @@
 #define ID_GROUP_LISTS     209
 #define ID_BUTTON_BLIST    210
 #define ID_BUTTON_WLIST    211
+#define ID_GROUP_STEAM     220
+#define ID_EDIT_STEAMURL   221
+#define ID_CHECK_STEAM     222
 
 #define IDD_WHITELIST      300
 #define ID_GROUP_WLNAME    301

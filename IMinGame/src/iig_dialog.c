@@ -70,6 +70,8 @@ void initSettingsDialogText(HWND hwnd) {
 	SetDlgItemText(hwnd, ID_GROUP_LISTS, getLangString(gSystemSettings.lang, IIG_LANGSTR_PROCLISTLBL));
 	SetDlgItemText(hwnd, ID_BUTTON_BLIST, getLangString(gSystemSettings.lang, IIG_LANGSTR_EDITBLISTLBL));
 	SetDlgItemText(hwnd, ID_BUTTON_WLIST, getLangString(gSystemSettings.lang, IIG_LANGSTR_EDITWLISTLBL));
+	SetDlgItemText(hwnd, ID_GROUP_STEAM, getLangString(gSystemSettings.lang, IIG_LANGSTR_STEAMINTEG));
+	SetDlgItemText(hwnd, ID_CHECK_STEAM, getLangString(gSystemSettings.lang, IIG_LANGSTR_STEAMENABLE));
 }
 
 /**

@@ -237,7 +237,6 @@ int getSteamProfileInfo(const TCHAR * url, const TCHAR * lang, SteamInGameInfo *
 		fprintf(stderr, "cookie unicode conversion failed\n");
 		goto cleanup;
 	}
-
 #endif
 
 	handler.parser = XML_ParserCreate(NULL);
@@ -262,7 +261,7 @@ int getSteamProfileInfo(const TCHAR * url, const TCHAR * lang, SteamInGameInfo *
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, iigCurlWriteCallback);
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &handler);
 	curl_easy_setopt(curl, CURLOPT_TIMEOUT, 30);
-	curl_easy_setopt(curl, CURLOPT_COOKIE, "Steam_Language=french");
+	curl_easy_setopt(curl, CURLOPT_COOKIE, wcookie);
 
 	res = curl_easy_perform(curl);
 
