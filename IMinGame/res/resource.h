@@ -32,6 +32,7 @@
 #define ID_GROUP_STEAM     220
 #define ID_EDIT_STEAMURL   221
 #define ID_CHECK_STEAM     222
+#define ID_STATIC_STEAMURL 223
 
 #define IDD_WHITELIST      300
 #define ID_GROUP_WLNAME    301

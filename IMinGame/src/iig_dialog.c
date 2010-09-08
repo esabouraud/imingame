@@ -72,6 +72,7 @@ void initSettingsDialogText(HWND hwnd) {
 	SetDlgItemText(hwnd, ID_BUTTON_WLIST, getLangString(gSystemSettings.lang, IIG_LANGSTR_EDITWLISTLBL));
 	SetDlgItemText(hwnd, ID_GROUP_STEAM, getLangString(gSystemSettings.lang, IIG_LANGSTR_STEAMINTEG));
 	SetDlgItemText(hwnd, ID_CHECK_STEAM, getLangString(gSystemSettings.lang, IIG_LANGSTR_STEAMENABLE));
+	SetDlgItemText(hwnd, ID_STATIC_STEAMURL, _T("http://steamcommunity.com/"));
 }
 
 /**
@@ -81,13 +82,16 @@ BOOL CALLBACK SettingsDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lPa
 {
 	switch(Message) {
 		case WM_INITDIALOG: {
-			HWND hwndCombo = NULL;
+			HWND hwndItem = NULL;
 			initSettingsDialogText(hwnd);
-			hwndCombo = GetDlgItem(hwnd, IDC_COMBO_LANGUAGE);
-			SendMessage(hwndCombo, CB_ADDSTRING, 0, (LPARAM)getLangString(0, IIG_LANGSTR_LANG));
-			SendMessage(hwndCombo, CB_ADDSTRING, 0, (LPARAM)getLangString(1, IIG_LANGSTR_LANG)); 
-			SendMessage(hwndCombo, CB_SETCURSEL, gSystemSettings.lang, 0);
+			hwndItem = GetDlgItem(hwnd, IDC_COMBO_LANGUAGE);
+			SendMessage(hwndItem, CB_ADDSTRING, 0, (LPARAM)getLangString(0, IIG_LANGSTR_LANG));
+			SendMessage(hwndItem, CB_ADDSTRING, 0, (LPARAM)getLangString(1, IIG_LANGSTR_LANG)); 
+			SendMessage(hwndItem, CB_SETCURSEL, gSystemSettings.lang, 0);
 			SendDlgItemMessage(hwnd, gSystemSettings.asGame ? ID_RADIO_EMUGAME : ID_RADIO_EMUMUSIC, BM_SETCHECK, BST_CHECKED, 0);
+			SendDlgItemMessage(hwnd, ID_CHECK_STEAM, BM_SETCHECK, gSystemSettings.steamProfileEnabled ? BST_CHECKED : BST_UNCHECKED, 0);
+			SetDlgItemText(hwnd, ID_EDIT_STEAMURL, gSystemSettings.steamProfileUrl);
+			SendDlgItemMessage(hwnd, ID_EDIT_STEAMURL, EM_SETREADONLY, !gSystemSettings.steamProfileEnabled , 0);
 			return TRUE;
 		}
 		
@@ -104,6 +108,8 @@ BOOL CALLBACK SettingsDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lPa
 
 					gSystemSettings.asGame = (BST_CHECKED == SendDlgItemMessage(hwnd, ID_RADIO_EMUGAME, BM_GETCHECK, 0, 0));
 					gSystemSettings.lang = SendDlgItemMessage(hwnd, IDC_COMBO_LANGUAGE, CB_GETCURSEL, 0, 0);
+					gSystemSettings.steamProfileEnabled = (BST_CHECKED == SendDlgItemMessage(hwnd, ID_CHECK_STEAM, BM_GETCHECK, 0, 0));
+					GetDlgItemText(hwnd, ID_EDIT_STEAMURL, gSystemSettings.steamProfileUrl, sizeof(gSystemSettings.steamProfileUrl)/sizeof(gSystemSettings.steamProfileUrl[0]));				
 					
 					initSettingsDialogText(hwnd);
 					resetWindowLabels(&gSystemSettings);
@@ -126,6 +132,12 @@ BOOL CALLBACK SettingsDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lPa
 						TCHAR filepath[_MAX_PATH];
 						_sntprintf(filepath, sizeof(filepath)/sizeof(*filepath), _T("%s\\wlist.txt"), gSystemSettings.path);
 						ShellExecute(NULL, _T("open"), filepath, NULL, NULL, SW_SHOW);
+					}
+					break;
+				case ID_CHECK_STEAM:
+					{
+						BOOL enablesteam = (BST_CHECKED == SendDlgItemMessage(hwnd, ID_CHECK_STEAM, BM_GETCHECK, 0, 0));
+						SendDlgItemMessage(hwnd, ID_EDIT_STEAMURL, EM_SETREADONLY, !enablesteam, 0);
 					}
 					break;
 			}

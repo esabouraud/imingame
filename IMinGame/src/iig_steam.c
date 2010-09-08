@@ -225,11 +225,11 @@ int getSteamProfileInfo(const TCHAR * url, const TCHAR * lang, SteamInGameInfo *
 	int res = -1;
 	SteamXmlHandler handler = {NULL};
 	SteamXmlParseData parseData = { NULL, ROOT , { { FALSE, FALSE, _T("") }, { FALSE, _T("") }, { FALSE, _T("")} } };
-	char wurl[512];
+	char wurl[512] = "steamcommunity.com/";
 	char wcookie[128] = "Steam_Language=";
 
 #ifdef UNICODE
-	if (0 == WideCharToMultiByte(CP_ACP, 0, url, -1, wurl, sizeof(wurl), NULL, NULL)) {
+	if (0 == WideCharToMultiByte(CP_ACP, 0, url, -1, wurl + strlen(wurl), sizeof(wurl) - sizeof(wurl), NULL, NULL)) {
 		fprintf(stderr, "url unicode conversion failed\n");
 		goto cleanup;
 	}
