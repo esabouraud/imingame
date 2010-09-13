@@ -81,63 +81,60 @@ BOOL CALLBACK EnumWindowsProc( HWND hwnd, LPARAM lParam )
     TCHAR szWindowName[255] = _T("<unknown>");
     DWORD processID;
 	SteamInGameInfo steamInfo;
+	BOOL screenSaver = FALSE;
 
     GetWindowThreadProcessId(hwnd, &processID);
-    GetWindowText(hwnd, szWindowName, 255);
+    
+	if(processID != (DWORD)lParam) {
+		return TRUE;
+	}
+				
 
-    if(processID == (DWORD)lParam && 
-       _tcscmp(szWindowName, _T("")) != 0 &&
-       IsWindowVisible(hwnd))
-    {
-		BOOL screenSaver = FALSE;
-		if (!gSystemSettings.legacyTimer) {
-			
-			if (isSteamGame && gSystemSettings.steamProfileEnabled) {
-				// get steam games online state every 10 minutes
-				SetTimer(gHwnd, 0, 600000, NULL);
-			} else if (retryGetName) {
-				// retry to get standard game name after 1 minute (avoid splashscreen issues)
-				SetTimer(gHwnd, 0, 60000, NULL);
-				retryGetName = FALSE;
-			} else {
-				KillTimer(gHwnd, 0);
-			}
-		}
+
+	if (!gSystemSettings.legacyTimer) {
 		
-		SystemParametersInfo(SPI_GETSCREENSAVERRUNNING, 0, &screenSaver, 0);
-		if (screenSaver) {
-			gGameProcessId = 0;
-			return FALSE;
-		}
-
 		if (isSteamGame && gSystemSettings.steamProfileEnabled) {
-			//TODO handle error
-			getSteamProfileInfo(gSystemSettings.steamProfileUrl, getLangString(gSystemSettings.lang, IIG_LANGSTR_STEAMLANG), &steamInfo);			
-			if (steamInfo.gameName.found) {
-				_tcscpy(szWindowName, _T(""));
-				_tcsncat(szWindowName, steamInfo.gameName.string, sizeof(szWindowName)/sizeof(szWindowName[0]));
-				_tcsncat(szWindowName, getLangString(gSystemSettings.lang, IIG_LANGSTR_STEAMSTR), sizeof(szWindowName)/sizeof(szWindowName[0] - _tcslen(szWindowName)));
-				if (steamInfo.inGameServerIP.found) {
-					_tcsncat(szWindowName, getLangString(gSystemSettings.lang, IIG_LANGSTR_STEAMSERV), sizeof(szWindowName)/sizeof(szWindowName[0] - _tcslen(szWindowName)));
-					_tcsncat(szWindowName, steamInfo.inGameServerIP.string, sizeof(szWindowName)/sizeof(szWindowName[0] - _tcslen(szWindowName)));
-				}
-			}
-		} else {
-			GetWindowText(hwnd, szWindowName, 255);
-		}
-		setMsnNowPlaying(gSystemSettings.userMessage, szWindowName, gSystemSettings.asGame, gHwnd);
-		updateWindowText(szWindowName);
-
-	} else {
-		// In case window name is not available on first pass
-		if (retryGetName) {
+			// get steam games online state every 10 minutes
+			SetTimer(gHwnd, 0, 600000, NULL);
+		} else if (retryGetName) {
+			// retry to get standard game name after 1 minute (avoid splashscreen issues)
+			SetTimer(gHwnd, 0, 60000, NULL);
 			retryGetName = FALSE;
 		} else {
-			gGameProcessId = 0;
+			KillTimer(gHwnd, 0);
 		}
+	}
+	
+	SystemParametersInfo(SPI_GETSCREENSAVERRUNNING, 0, &screenSaver, 0);
+	if (screenSaver) {
+		gGameProcessId = 0;
 		return FALSE;
 	}
-    return TRUE;
+
+	if (isSteamGame && gSystemSettings.steamProfileEnabled) {
+		//TODO handle error
+		getSteamProfileInfo(gSystemSettings.steamProfileUrl, getLangString(gSystemSettings.lang, IIG_LANGSTR_STEAMLANG), &steamInfo);			
+		if (steamInfo.gameName.found) {
+			_tcscpy(szWindowName, _T(""));
+			_tcsncat(szWindowName, steamInfo.gameName.string, sizeof(szWindowName)/sizeof(szWindowName[0]));
+			_tcsncat(szWindowName, getLangString(gSystemSettings.lang, IIG_LANGSTR_STEAMSTR), sizeof(szWindowName)/sizeof(szWindowName[0] - _tcslen(szWindowName)));
+			if (steamInfo.inGameServerIP.found) {
+				_tcsncat(szWindowName, getLangString(gSystemSettings.lang, IIG_LANGSTR_STEAMSERV), sizeof(szWindowName)/sizeof(szWindowName[0] - _tcslen(szWindowName)));
+				_tcsncat(szWindowName, steamInfo.inGameServerIP.string, sizeof(szWindowName)/sizeof(szWindowName[0] - _tcslen(szWindowName)));
+			}
+		}
+	} else {
+		//if (IsWindowVisible(hwnd)) {
+			GetWindowText(hwnd, szWindowName, 255);
+			if (_tcscmp(szWindowName, _T("")) == 0) {
+				_tcscpy(szWindowName,  _T("<unknown>"));
+			}
+		//}
+	}
+	setMsnNowPlaying(gSystemSettings.userMessage, szWindowName, gSystemSettings.asGame, gHwnd);
+	updateWindowText(szWindowName);
+
+    return FALSE;
 }
 
 
