@@ -128,8 +128,15 @@ BOOL CALLBACK EnumWindowsProc( HWND hwnd, LPARAM lParam )
 		setMsnNowPlaying(gSystemSettings.userMessage, szWindowName, gSystemSettings.asGame, gHwnd);
 		updateWindowText(szWindowName);
 
+	} else {
+		// In case window name is not available on first pass
+		if (retryGetName) {
+			retryGetName = FALSE;
+		} else {
+			gGameProcessId = 0;
+		}
 		return FALSE;
-    }
+	}
     return TRUE;
 }
 
