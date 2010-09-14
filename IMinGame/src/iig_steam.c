@@ -226,10 +226,11 @@ int getSteamProfileInfo(const TCHAR * url, const TCHAR * lang, SteamInGameInfo *
 	SteamXmlHandler handler = {NULL};
 	SteamXmlParseData parseData = { NULL, ROOT , { { FALSE, FALSE, _T("") }, { FALSE, _T("") }, { FALSE, _T("")} } };
 	char wurl[512] = "steamcommunity.com/";
+	char wurlparam[] = "/?xml=1";
 	char wcookie[128] = "Steam_Language=";
 
 #ifdef UNICODE
-	if (0 == WideCharToMultiByte(CP_ACP, 0, url, -1, wurl + strlen(wurl), sizeof(wurl) - sizeof(wurl), NULL, NULL)) {
+	if (0 == WideCharToMultiByte(CP_ACP, 0, url, -1, wurl + strlen(wurl), sizeof(wurl) - strlen(wurl), NULL, NULL)) {
 		fprintf(stderr, "url unicode conversion failed\n");
 		goto cleanup;
 	}
@@ -237,7 +238,27 @@ int getSteamProfileInfo(const TCHAR * url, const TCHAR * lang, SteamInGameInfo *
 		fprintf(stderr, "cookie unicode conversion failed\n");
 		goto cleanup;
 	}
+#else
+	if (sizeof(wurl) <= strlen(wurl) + strlen(url)) {
+		fprintf(stderr, "url too long\n");
+		goto cleanup;
+	} else {
+		strcat(wurl, url);
+	}
+	if (sizeof(wcookie) <= strlen(wcookie) + strlen(lang)) {
+		fprintf(stderr, "lang too long\n");
+		goto cleanup;
+	} else {
+		strcat(wcookie, lang);
+	}
 #endif
+
+	if (sizeof(wurl) <= strlen(wurl) + strlen(wurlparam)) {
+		fprintf(stderr, "url too long\n");
+		goto cleanup;
+	} else {
+		strcat(wurl, wurlparam);
+	}
 
 	handler.parser = XML_ParserCreate(NULL);
 	if (!handler.parser) {

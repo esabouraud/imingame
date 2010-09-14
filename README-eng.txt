@@ -56,4 +56,11 @@ The format for black list file is (without <>) :
 
 IMinGame can fetch public user data on the steamcommunity.com website. If this
 feature is enabled, when a steam game is run the status message will be based
-on the current steam status.
+on the current steam status. A steam public web profile is required, such as
+http://steamcommunity.com/id/robinwalker
+or
+http://steamcommunity.com/profiles/76561197960435530
+Copy the part after http://steamcommunity.com/ in the settings dialog and check
+the checkbox to enable steam integration. Steam integration sets the message as
+<Game name> [Steam] on <Server IP if applicable>.
+The IP of the server is updated every 10 minutes.

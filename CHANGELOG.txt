@@ -1,4 +1,4 @@
-2010-07-2x version 0.3.0:
+2010-09-14 version 0.3.0:
 	* Steam web integration (game name and server playing played on)
 		^ Fetch steamcommunity xml stream with libcurl and parse it with expat
 	* C an C++ code separated

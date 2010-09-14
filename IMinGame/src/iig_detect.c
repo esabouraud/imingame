@@ -83,6 +83,7 @@ BOOL CALLBACK EnumWindowsProc( HWND hwnd, LPARAM lParam )
 	SteamInGameInfo steamInfo;
 	BOOL screenSaver = FALSE;
 
+	memset(&steamInfo, 0, sizeof(steamInfo));
     GetWindowThreadProcessId(hwnd, &processID);
     
 	if(processID != (DWORD)lParam) {
@@ -123,7 +124,9 @@ BOOL CALLBACK EnumWindowsProc( HWND hwnd, LPARAM lParam )
 				_tcsncat(szWindowName, steamInfo.inGameServerIP.string, sizeof(szWindowName)/sizeof(szWindowName[0] - _tcslen(szWindowName)));
 			}
 		}
-	} else {
+	} 
+	
+	if (!steamInfo.gameName.found) {
 		//if (IsWindowVisible(hwnd)) {
 			GetWindowText(hwnd, szWindowName, 255);
 			if (_tcscmp(szWindowName, _T("")) == 0) {

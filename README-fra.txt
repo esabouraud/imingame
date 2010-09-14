@@ -60,4 +60,13 @@ Le format de la liste noire est (sans <>):
 
 IMinGame peut récupérer les données publiques d'un utilisateur sur le site web
 steamcommunity.com. Si cette fonctionnalité est activée, lorsqu'un jeu steam
-est lancé le message de statut sera basé sur le statut steam actuel.
+est lancé le message de statut sera basé sur le statut steam actuel. Un profil
+steam public est requis, tel que
+http://steamcommunity.com/id/robinwalker
+ou
+http://steamcommunity.com/profiles/76561197960435530
+Copier la partie après http://steamcommunity.com/ dans la fenêtre d'options et
+cocher la case pour activer l'intégration. Celle-ci utilise comme message :
+<Nom du jeu> [Steam] sur <IP du serveur si applicable>.
+L'IP du serveur est mise à jour toutes les 10 minutes.
+
