@@ -45,7 +45,7 @@ extern DWORD gGameProcessId;
 extern LRESULT WINAPI IMinGameProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam );
 
 #define APP_NAME    _T("IMinGame")
-#define APP_VERSION _T("0.3.0")
+#define APP_VERSION _T("0.3.1")
 
 #define IIG_LANGSTR_MACRO( id, eng, fre ) _T(eng),
 static const TCHAR* engLangStr[] = {
@@ -90,6 +90,7 @@ void resetWindowLabels(const SystemSettings* settings) {
 	SetDlgItemText(gHwnd, ID_BUTTON_SETTINGS, getLangString(settings->lang, IIG_LANGSTR_SETTINGSLBL));
 	SetDlgItemText(gHwnd, ID_BUTTON_REFRESH, getLangString(settings->lang, IIG_LANGSTR_REFRESHLBL));
 	SetDlgItemText(gHwnd, ID_BUTTON_BLACKLIST, getLangString(settings->lang, IIG_LANGSTR_BLACKLISTBTNLBL));
+	SetDlgItemText(gHwnd, ID_BUTTON_WHITELIST, getLangString(settings->lang, IIG_LANGSTR_WHITELISTBTNLBL));
 	
 	if (!gGameProcessId) {
 		SendMessage(lblGame, WM_SETTEXT, 0, (LPARAM)getLangString(settings->lang, IIG_LANGSTR_GAMENAMEDEF));
@@ -133,6 +134,7 @@ void BuildGUI(HINSTANCE hInst, const SystemSettings* settings)
 		CreateWindow(_T("BUTTON"), getLangString(settings->lang, IIG_LANGSTR_SETTINGSLBL),  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON, 170, 90, 104, 20, gHwnd, (HMENU)ID_BUTTON_SETTINGS, hInst, NULL);
 		CreateWindow(_T("BUTTON"), getLangString(settings->lang, IIG_LANGSTR_REFRESHLBL),  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON, 280, 90, 98, 20, gHwnd, (HMENU)ID_BUTTON_REFRESH, hInst, NULL);
 		CreateWindow(_T("BUTTON"), getLangString(settings->lang, IIG_LANGSTR_BLACKLISTBTNLBL),  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON, 280, 65, 98, 20, gHwnd, (HMENU)ID_BUTTON_BLACKLIST, hInst, NULL);
+		CreateWindow(_T("BUTTON"), getLangString(settings->lang, IIG_LANGSTR_WHITELISTBTNLBL),  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON, 170, 65, 104, 20, gHwnd, (HMENU)ID_BUTTON_WHITELIST, hInst, NULL);
 	}
 	
 	{

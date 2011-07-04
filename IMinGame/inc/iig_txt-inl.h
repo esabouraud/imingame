@@ -69,6 +69,10 @@ IIG_LANGSTR_MACRO(BLACKLISTBTNLBL,\
 	"Blacklist it",
 	"En liste noire")
 
+IIG_LANGSTR_MACRO(WHITELISTBTNLBL,\
+	"Set game name",
+	"Nom du jeu")
+
 IIG_LANGSTR_MACRO(EXITLBL,\
 	"Exit",\
 	"Quitter")

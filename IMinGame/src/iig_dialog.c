@@ -341,6 +341,26 @@ LRESULT WINAPI IMinGameProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 					}
 				}
 				break;
+
+			case ID_BUTTON_WHITELIST:
+				{
+					if (gGameProcessId) {
+						if (GetProcessName(procname, sizeof(procname), gGameProcessId)) {
+							SendMessage(lblGame, WM_GETTEXT, sizeof(appname), (LPARAM)appname);
+							if (DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_WHITELIST), hWnd, WhiteListDlgProc) == IDOK) {
+								RemoveFromBlackList(&gSystemSettings, procname);
+								RemoveFromWhiteList(&gSystemSettings, procname);
+								if (_tcscmp(appname, _T("")) == 0) {
+									AddToWhiteList(&gSystemSettings, procname, procname);
+								} else {
+									AddToWhiteList(&gSystemSettings, procname, appname);
+								}
+								PoolProcesses();
+							}
+						}
+					}
+				}
+				break;
         }
         return 0;
 

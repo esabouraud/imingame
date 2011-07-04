@@ -16,6 +16,7 @@
 #define ID_BUTTON_REFRESH   109
 #define ID_BUTTON_SETTINGS  110
 #define IDB_LOGO            111
+#define ID_BUTTON_WHITELIST 112
 
 #define IDD_OPTIONS        200
 #define IDC_COMBO_LANGUAGE 201
