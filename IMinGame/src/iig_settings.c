@@ -54,7 +54,8 @@ static const TCHAR* defaultBlackList[] = {
 	_T("msnmsgr.exe"), // msn/live messenger
 	_T("nvCplUI.exe"), // nvidia control panel
 	_T("mumble.exe"),
-	_T("GameOverlayUI.exe") // steam in-game overlay
+	_T("GameOverlayUI.exe"), // steam in-game overlay
+	_T("plugin-container.exe") // firefox plugin isolation
 };
 
 //* \brief Do not check these processes for game modules
