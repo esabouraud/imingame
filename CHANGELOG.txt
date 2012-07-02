@@ -1,3 +1,6 @@
+2011-07-04 version 0.3.1:
+	* "Set game name" button added to main window
+
 2010-09-14 version 0.3.0:
 	* Steam web integration (game name and server playing played on)
 		^ Fetch steamcommunity xml stream with libcurl and parse it with expat
